@@ -8,7 +8,7 @@
 //using Molten.IO;
 //using Newtonsoft.Json;
 
-//namespace Molten.Graphics.Vulkan
+//namespace SpirvReflector
 //{
 //    /// <summary>
 //    /// Generates a <see cref="ShaderReflection"/> object from a compiled SPIR-V shader, by parsing its bytecode.
@@ -26,7 +26,7 @@
 //        static Reflector()
 //        {
 //            _defs = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
-//            Stream stream = EmbeddedResource.TryGetStream("Molten.Graphics.Vulkan.Shaders.Spirv.Spirv_opcodes.json", typeof(SpirvInstructionDef).Assembly);
+//            Stream stream = EmbeddedResource.TryGetStream("SpirvReflector.Shaders.Spirv.Spirv_opcodes.json", typeof(SpirvInstructionDef).Assembly);
 //            if (stream != null)
 //            {
 //                string json = null;
@@ -155,7 +155,7 @@
 //                    genericTypes.Add(gType);
 //                }
 
-//                t = Type.GetType($"Molten.Graphics.Vulkan.{typeName}`{genericTypes.Count}");
+//                t = Type.GetType($"SpirvReflector.{typeName}`{genericTypes.Count}");
 //                if(t == null)
 //                    t = Type.GetType($"System.{typeName}`{genericTypes.Count}");
 
@@ -164,7 +164,7 @@
 //            }
 //            else
 //            {
-//                t = Type.GetType($"Molten.Graphics.Vulkan.{typeName}");
+//                t = Type.GetType($"SpirvReflector.{typeName}");
 //                if(t == null)
 //                    t = Type.GetType($"System.{typeName}");
 //            }

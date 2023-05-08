@@ -1,4 +1,4 @@
-namespace Molten.Graphics.Vulkan
+namespace SpirvReflector
 {
   public enum FPOperationMode
    {

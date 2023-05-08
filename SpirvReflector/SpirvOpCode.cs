@@ -1,4 +1,4 @@
-namespace Molten.Graphics.Vulkan
+namespace SpirvReflector
 {
     /// <summary>
     /// Represents a SPIR-V instruction opcode.

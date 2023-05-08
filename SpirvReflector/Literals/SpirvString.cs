@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Molten.Graphics.Vulkan
+namespace SpirvReflector
 {
     public class SpirvString : SpirvLiteral
     {

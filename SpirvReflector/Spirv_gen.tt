@@ -121,7 +121,7 @@ public class Generator
         { 
             if(kindDef.Category == "ValueEnum" || kindDef.Category == "BitEnum")
             {
-                Out("namespace Molten.Graphics.Vulkan");
+                Out("namespace SpirvReflector");
                 Out("{");
                 Out($"  public enum {kindDef.Kind}");
                 Out("   {");

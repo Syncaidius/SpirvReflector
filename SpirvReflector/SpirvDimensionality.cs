@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Vulkan
+namespace SpirvReflector
 {
     /// <summary>
     /// Dimensionality of an image. Used by <see cref="SpirvOpCode.OpTypeImage"/>.
