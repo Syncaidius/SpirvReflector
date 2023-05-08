@@ -132,6 +132,7 @@ public class Generator
 						valName = $"{kindDef.Kind}{valName}";
 
                     Out($"      {valName} = {enumDef.Value},");
+                    Out("");
                 }
                 Out("   }");
                 Out("}");
@@ -155,6 +156,7 @@ public class Generator
 			if(Char.IsDigit(opName[0]))
 				opName = $"Op{opName}";
             Out($"      {opName} = {instDef.Opcode},");
+            Out("");
 		}
         Out("   }");
 		Out("}");
