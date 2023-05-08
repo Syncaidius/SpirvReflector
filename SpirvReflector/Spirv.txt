@@ -1,0 +1,16 @@
+
+
+ 
+Uninterpreted operand kind 'IdResultType' -- Category: Id
+Uninterpreted operand kind 'IdResult' -- Category: Id
+Uninterpreted operand kind 'IdMemorySemantics' -- Category: Id
+Uninterpreted operand kind 'IdScope' -- Category: Id
+Uninterpreted operand kind 'IdRef' -- Category: Id
+Uninterpreted operand kind 'LiteralInteger' -- Category: Literal
+Uninterpreted operand kind 'LiteralString' -- Category: Literal
+Uninterpreted operand kind 'LiteralContextDependentNumber' -- Category: Literal
+Uninterpreted operand kind 'LiteralExtInstInteger' -- Category: Literal
+Uninterpreted operand kind 'LiteralSpecConstantOpInteger' -- Category: Literal
+Uninterpreted operand kind 'PairLiteralIntegerIdRef' -- Category: Composite
+Uninterpreted operand kind 'PairIdRefLiteralInteger' -- Category: Composite
+Uninterpreted operand kind 'PairIdRefIdRef' -- Category: Composite

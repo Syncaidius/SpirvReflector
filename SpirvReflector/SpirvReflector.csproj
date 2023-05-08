@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>SPIR-V Reflector</Title>
+    <Version>0.1</Version>
+    <Authors>James Yarwood</Authors>
+    <Description>A library for extracting information about a shader from SPIR-V bytecode, which you can then use for anything from automating shader bindings or generating shader statistics.</Description>
+    <Copyright>Copyright © 2022 James Yarwood</Copyright>
+    <PackageProjectUrl>https://github.com/Syncaidius/SpirvReflector</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Syncaidius/SpirvReflector</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>spirv; spir-v; shader; bytecode; vulkan;</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Spirv.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Spirv.txt</LastGenOutput>
+    </None>
+    <None Update="Spirv.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Spirv.tt</DependentUpon>
+    </None>
+    <None Update="Spirv_gen.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Spirv_gen.txt</LastGenOutput>
+    </None>
+    <None Update="Spirv_gen.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Spirv_gen.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+</Project>

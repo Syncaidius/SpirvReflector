@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpirvReflector", "SpirvReflector.csproj", "{434D418E-2568-419D-B38C-D2A40C62C5D6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{434D418E-2568-419D-B38C-D2A40C62C5D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434D418E-2568-419D-B38C-D2A40C62C5D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{434D418E-2568-419D-B38C-D2A40C62C5D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{434D418E-2568-419D-B38C-D2A40C62C5D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A883D45-5DC5-4412-B825-F4E0D33923ED}
+	EndGlobalSection
+EndGlobal
