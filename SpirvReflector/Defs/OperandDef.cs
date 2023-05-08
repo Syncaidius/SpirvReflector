@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public enum SpirvAccessQualifier
+    internal class OperandDef
     {
-        ReadOnly = 0,
-        WriteOnly = 1,
-        ReadWrite = 2,
-        Max = 0x7fffffff,
+        public string Category { get; set; }
+
+        public string Kind { get; set; }
     }
 }

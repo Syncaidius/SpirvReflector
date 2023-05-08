@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace SpirvReflector
 {
-    internal class SpirvDef
+    internal class Def
     {
         [JsonProperty("major_version")]
         public int MajorVersion { get; set; }
@@ -25,9 +25,9 @@ namespace SpirvReflector
         [JsonProperty("revision")]
         public int Revision { get; set; }
 
-        public SpirvInstructionDef[] Instructions { get; set; } = new SpirvInstructionDef[0];
+        public InstructionDef[] Instructions { get; set; } = new InstructionDef[0];
 
         [JsonProperty("operand_kinds")]
-        public SpirvOperandKindDef[] OperandKinds { get; set; } = new SpirvOperandKindDef[0];
+        public OperandKindDef[] OperandKinds { get; set; } = new OperandKindDef[0];
     }
 }

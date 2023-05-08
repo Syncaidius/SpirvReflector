@@ -143,6 +143,25 @@ public class Generator
         }
     }
 
+    public void GenerateOpCodeEnum()
+    {
+        Out("namespace SpirvReflector");
+        Out("{");
+        Out($"  public enum OpCode");
+        Out("   {");
+        foreach(SpirvInstructionDef instDef in _def.Instructions)
+		{
+			string opName = instDef.OpName;
+			if(Char.IsDigit(opName[0]))
+				opName = $"Op{opName}";
+            Out($"      {opName} = {instDef.Opcode},");
+		}
+        Out("   }");
+		Out("}");
+		SaveFile("OpCode");
+		_sb.Clear();
+    }
+
     private void Out(int indent, string text)
     {
         _sb.AppendLine($"{new string('\t', indent)}{text}");

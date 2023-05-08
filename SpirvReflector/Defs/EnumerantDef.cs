@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public class SpirvEnumerantDef
+    public class EnumerantDef
     {
         public string Enumerant { get; set; }
 
-        public uint Value { get; set; }
+        public string Value { get; set; }
 
         public string[] Capabilities { get; set; } = new string[0];
 
-        public SpirvKindDef[] Parameters { get; set; } = new SpirvKindDef[0];
+        public KindDef[] Parameters { get; set; } = new KindDef[0];
 
         public string[] Extensions { get; set; } = new string[0];
 

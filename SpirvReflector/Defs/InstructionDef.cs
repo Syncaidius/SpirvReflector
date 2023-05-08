@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    internal class SpirvInstructionDef
+    internal class InstructionDef
     {
         public string OpName { get; set; }
 
@@ -14,6 +14,6 @@ namespace SpirvReflector
 
         public uint Opcode { get; set; }
 
-        public SpirvOperandDef[] Operands { get; set; } = new SpirvOperandDef[0];
+        public OperandDef[] Operands { get; set; } = new OperandDef[0];
     }
 }

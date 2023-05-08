@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    internal class SpirvOperandDef
+    public class OperandKindDef
     {
         public string Category { get; set; }
 
         public string Kind { get; set; }
+
+        public EnumerantDef[] Enumerants { get; set; } = new EnumerantDef[0];
     }
 }

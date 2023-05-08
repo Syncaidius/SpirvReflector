@@ -68,7 +68,7 @@ namespace SpirvReflector
 
         public uint WordCount => _ptr[0] >> 16;
 
-        public SpirvOpCode OpCode => (SpirvOpCode)(_ptr[0] & 0xFFFF);
+        public OpCode OpCode => (OpCode)(_ptr[0] & 0xFFFF);
 
         public List<SpirvWord> Words { get; }
 

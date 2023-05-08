@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public class SpirvKindDef
+    public class KindDef
     {
         public string Name { get; set; }
 

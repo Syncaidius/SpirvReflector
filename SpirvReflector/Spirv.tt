@@ -26,5 +26,6 @@
 
         Generator gen = new Generator(this.GenerationEnvironment, this.Host, url, filePath, "");
         gen.GenerateEnums("Enums");
+        gen.GenerateOpCodeEnum();
     }
 #>
