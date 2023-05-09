@@ -11,19 +11,19 @@ namespace SpirvReflector
     {
         public void Error(string text)
         {
-            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(text);
         }
 
         public void Warning(string text)
         {
-            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(text);
         }
 
         public void WriteLine(string text)
         {
-            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(text);
         }
     }

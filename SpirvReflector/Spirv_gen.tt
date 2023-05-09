@@ -165,8 +165,6 @@ public class Generator
                 Out("}");
                 SaveFile($"{subFolder}{typeName}");
                 _sb.Clear();
-            }else{
-                _sbHost.AppendLine($"Uninterpreted operand kind '{typeName}' -- Category: {kindDef.Category}");
             }
         }
     }
@@ -190,6 +188,39 @@ public class Generator
 		Out("}");
 		SaveFile($"{typeName}");
 		_sb.Clear();
+    }
+
+    public void GenerateCompositeLiterals(string subFolder)
+    {
+        if(!subFolder.EndsWith("\\"))
+            subFolder += "\\";
+
+        foreach(SpirvOperandKindDef kindDef in _def.OperandKinds)
+        { 
+            string typeName = $"{_typePrefix}{kindDef.Kind}";
+
+            if(kindDef.Category == "Composite")
+            {
+                Out("using SpirvReflector.Literals;");
+                Out("");
+                Out("namespace SpirvReflector");
+                Out("{");
+
+                string baseTypes = "";
+                foreach(string  baseType in kindDef.Bases)
+				{
+					if(baseTypes.Length > 0)
+						baseTypes += ", ";
+
+					baseTypes += $"{_typePrefix}{baseType}";
+				}
+
+                Out($"\tpublic class {typeName} : SpirvWordPair<{baseTypes}> {{ }}");
+                Out("}");
+                SaveFile($"{subFolder}{typeName}");
+                _sb.Clear();
+            }
+        }
     }
 
     private void Out(int indent, string text)

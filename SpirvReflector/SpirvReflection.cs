@@ -32,7 +32,10 @@ namespace SpirvReflector
                 throw new InvalidOperationException("SpirvReflector is already loaded");
 
             _isLoaded = true;
+            _defInstructions = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
+
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
+
             // TODO Parse all json files in the embedded SpirvReflector.Maps folder.
 
             if (stream != null)
@@ -47,7 +50,12 @@ namespace SpirvReflector
                 {
                     try
                     {
-                        _def = JsonConvert.DeserializeObject<SpirvDef>(json);   
+                        _def = JsonConvert.DeserializeObject<SpirvDef>(json);
+                        foreach (SpirvInstructionDef inst in _def.Instructions)
+                        {
+                            if(!_defInstructions.TryAdd((SpirvOpCode)inst.Opcode, inst))
+                                Console.WriteLine($"Skipping duplicate opcode definition: {inst.OpName} ({inst.Opcode})");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -72,6 +80,7 @@ namespace SpirvReflector
 
             _def = null;
             _defInstructions = null;
+
             _isLoaded = false;
         }
 
@@ -132,30 +141,26 @@ namespace SpirvReflector
             {
                 SpirvInstruction inst = _stream.ReadInstruction();
                 _instructions.Add(inst);
-            }
-        }
 
-        /*private void ReadInstructions(IReflectionLogger log)
-        {
-            uint instID = 0;
-            while (!_stream.IsEndOfStream)
-            {
-                SpirvInstruction inst = _stream.ReadInstruction();
-                _instructions.Add(inst);
-
-                if (_defs.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
+                if (_defInstructions.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
                 {
                     foreach (SpirvOperandDef opDef in def.Operands)
                     {
-                        string wordTypeName = opDef.Words[wordDesc];
-                        Type t = GetWordType(log, wordTypeName);
+                        // Check if the type is an enum.
+                        string wordTypeName = $"Spirv{opDef.Kind}";
+                        Type t = GetWordType(wordTypeName);
+                        if (t.IsEnum)
+                        {
+                            Type tGeneric = GetWordType("SpirvWord`1");
+                            t = tGeneric.MakeGenericType(t);
+                        }
 
                         if (t != null)
                         {
                             SpirvWord word = Activator.CreateInstance(t) as SpirvWord;
-                            word.Name = wordDesc;
+                            word.Name = opDef.Name;
 
-                            if (word is SpirvResultID resultID)
+                            if (word is SpirvIdResult resultID)
                                 inst.Result = resultID;
                             else
                                 inst.Words.Add(word);
@@ -164,7 +169,7 @@ namespace SpirvReflector
                         }
                         else
                         {
-                            log.Warning($"Unknown word type: {wordTypeName}");
+                            _log.Warning($"Unknown word type: {wordTypeName}");
                         }
                     }
 
@@ -172,23 +177,23 @@ namespace SpirvReflector
                     if (inst.Words.Count > 0)
                     {
                         string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
-                        log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode} -- {operands}");
+                        _log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode} -- {operands}");
                     }
                     else
                     {
-                        log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode}");
+                        _log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode}");
                     }
                 }
                 else
                 {
-                    log.Warning($"Instruction {instID}: Unknown opcode ({inst.OpCode}).");
+                    _log.Warning($"Instruction {instID}: Unknown opcode '{inst.OpCode}' ({(uint)inst.OpCode}).");
                 }
 
                 instID++;
             }
-        }*/
+        }
 
-        private Type GetWordType(IReflectionLogger log, string typeName)
+        private Type GetWordType(string typeName)
         {
             int genericIndex = typeName.IndexOf('{');
             List<Type> genericTypes = new List<Type>();
@@ -203,10 +208,10 @@ namespace SpirvReflector
                 foreach (string gp in gParams)
                 {
                     string genericName = gp.Trim();
-                    Type gType = GetWordType(log, genericName);
+                    Type gType = GetWordType(genericName);
                     if (gType == null)
                     {
-                        log.Warning($"Unknown generic type '{genericName}' for type '{typeName}'");
+                        _log.Warning($"Unknown generic type '{genericName}' for type '{typeName}'");
                         return null;
                     }
 

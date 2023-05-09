@@ -15,7 +15,7 @@ namespace SpirvReflector
         {
             _ptr = ptr;
             _readIndex = 1;
-            //Words = new List<SpirvWord>();
+            Words = new List<SpirvWord>();
         }
 
         public uint ReadWord()
@@ -23,7 +23,8 @@ namespace SpirvReflector
             return _ptr[_readIndex++];
         }
 
-        public T ReadWord<T>() where T : unmanaged
+        public T ReadWord<T>() 
+            where T : unmanaged
         {
             return *(T*)ReadWordPtr();
         }
@@ -60,9 +61,9 @@ namespace SpirvReflector
 
         public override string ToString()
         {
-            //if (Words.Count > 0)
-           //     return $"{OpCode} - {WordCount} words";
-           // else
+            if (Words.Count > 0)
+                return $"{OpCode} - {WordCount} words";
+            else
                 return $"{OpCode}";
         }
 
@@ -76,7 +77,9 @@ namespace SpirvReflector
         /// </summary>
         public SpirvOpCode OpCode => (SpirvOpCode)(_ptr[0] & 0xFFFF);
 
-        //public List<SpirvWord> Words { get; }
+        public List<SpirvWord> Words { get; }
+
+        public SpirvIdResult Result { get; set; }
 
         public uint* Ptr => _ptr;
     }

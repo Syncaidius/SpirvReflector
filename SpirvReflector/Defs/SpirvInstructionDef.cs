@@ -15,5 +15,10 @@ namespace SpirvReflector
         public uint Opcode { get; set; }
 
         public SpirvOperandDef[] Operands { get; set; } = new SpirvOperandDef[0];
+
+        public override string ToString()
+        {
+            return $"Name: {OpName} -- Op: {Opcode} -- Class: {Class}";
+        }
     }
 }
