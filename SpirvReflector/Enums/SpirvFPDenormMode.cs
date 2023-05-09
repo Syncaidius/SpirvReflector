@@ -1,10 +1,10 @@
 namespace SpirvReflector
 {
-   public enum SpirvFPDenormMode
-   {
-      Preserve = 0,
+	public enum SpirvFPDenormMode
+	{
+		Preserve = 0,
 
-      FlushToZero = 1,
-   }
+		FlushToZero = 1,
+	}
 }
 

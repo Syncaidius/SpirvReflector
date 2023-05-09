@@ -1,24 +1,24 @@
 namespace SpirvReflector
 {
-   public enum SpirvFunctionParameterAttribute
-   {
-      Zext = 0,
+	public enum SpirvFunctionParameterAttribute
+	{
+		Zext = 0,
 
-      Sext = 1,
+		Sext = 1,
 
-      ByVal = 2,
+		ByVal = 2,
 
-      Sret = 3,
+		Sret = 3,
 
-      NoAlias = 4,
+		NoAlias = 4,
 
-      NoCapture = 5,
+		NoCapture = 5,
 
-      NoWrite = 6,
+		NoWrite = 6,
 
-      NoReadWrite = 7,
+		NoReadWrite = 7,
 
-      RuntimeAlignedINTEL = 5940,
-   }
+		RuntimeAlignedINTEL = 5940,
+	}
 }
 

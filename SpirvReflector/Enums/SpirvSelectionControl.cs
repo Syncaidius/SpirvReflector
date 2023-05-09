@@ -1,12 +1,12 @@
 namespace SpirvReflector
 {
-   public enum SpirvSelectionControl
-   {
-      None = 0x0000,
+	public enum SpirvSelectionControl
+	{
+		None = 0x0000,
 
-      Flatten = 0x0001,
+		Flatten = 0x0001,
 
-      DontFlatten = 0x0002,
-   }
+		DontFlatten = 0x0002,
+	}
 }
 

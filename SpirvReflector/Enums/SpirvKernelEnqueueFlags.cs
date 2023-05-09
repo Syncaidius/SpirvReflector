@@ -1,12 +1,12 @@
 namespace SpirvReflector
 {
-   public enum SpirvKernelEnqueueFlags
-   {
-      NoWait = 0,
+	public enum SpirvKernelEnqueueFlags
+	{
+		NoWait = 0,
 
-      WaitKernel = 1,
+		WaitKernel = 1,
 
-      WaitWorkGroup = 2,
-   }
+		WaitWorkGroup = 2,
+	}
 }
 

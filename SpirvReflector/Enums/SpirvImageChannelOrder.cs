@@ -1,46 +1,46 @@
 namespace SpirvReflector
 {
-   public enum SpirvImageChannelOrder
-   {
-      R = 0,
+	public enum SpirvImageChannelOrder
+	{
+		R = 0,
 
-      A = 1,
+		A = 1,
 
-      RG = 2,
+		RG = 2,
 
-      RA = 3,
+		RA = 3,
 
-      RGB = 4,
+		RGB = 4,
 
-      RGBA = 5,
+		RGBA = 5,
 
-      BGRA = 6,
+		BGRA = 6,
 
-      ARGB = 7,
+		ARGB = 7,
 
-      Intensity = 8,
+		Intensity = 8,
 
-      Luminance = 9,
+		Luminance = 9,
 
-      Rx = 10,
+		Rx = 10,
 
-      RGx = 11,
+		RGx = 11,
 
-      RGBx = 12,
+		RGBx = 12,
 
-      Depth = 13,
+		Depth = 13,
 
-      DepthStencil = 14,
+		DepthStencil = 14,
 
-      sRGB = 15,
+		sRGB = 15,
 
-      sRGBx = 16,
+		sRGBx = 16,
 
-      sRGBA = 17,
+		sRGBA = 17,
 
-      sBGRA = 18,
+		sBGRA = 18,
 
-      ABGR = 19,
-   }
+		ABGR = 19,
+	}
 }
 

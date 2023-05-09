@@ -1,14 +1,14 @@
 namespace SpirvReflector
 {
-   public enum SpirvFPRoundingMode
-   {
-      RTE = 0,
+	public enum SpirvFPRoundingMode
+	{
+		RTE = 0,
 
-      RTZ = 1,
+		RTZ = 1,
 
-      RTP = 2,
+		RTP = 2,
 
-      RTN = 3,
-   }
+		RTN = 3,
+	}
 }
 

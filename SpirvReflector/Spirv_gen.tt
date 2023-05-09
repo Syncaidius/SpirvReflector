@@ -127,8 +127,8 @@ public class Generator
             {
                 Out("namespace SpirvReflector");
                 Out("{");
-                Out($"   public enum {typeName}");
-                Out("   {");
+                Out($"\tpublic enum {typeName}");
+                Out("\t{");
                 bool first = true;
                 foreach(SpirvEnumerantDef enumDef in kindDef.Enumerants)
                 {
@@ -139,10 +139,10 @@ public class Generator
                     if(Char.IsDigit(valName[0]))
 						valName = $"{kindDef.Kind}{valName}";
 
-                    Out($"      {valName} = {enumDef.Value},");
+                    Out($"\t\t{valName} = {enumDef.Value},");
                     first = false;
                 }
-                Out("   }");
+                Out("\t}");
                 Out("}");
                 SaveFile($"{subFolder}{typeName}");
                 _sb.Clear();

@@ -1,12 +1,12 @@
 namespace SpirvReflector
 {
-   public enum SpirvLinkageType
-   {
-      Export = 0,
+	public enum SpirvLinkageType
+	{
+		Export = 0,
 
-      Import = 1,
+		Import = 1,
 
-      LinkOnceODR = 2,
-   }
+		LinkOnceODR = 2,
+	}
 }
 

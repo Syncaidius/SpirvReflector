@@ -1,12 +1,12 @@
 namespace SpirvReflector
 {
-   public enum SpirvRayQueryCommittedIntersectionType
-   {
-      RayQueryCommittedIntersectionNoneKHR = 0,
+	public enum SpirvRayQueryCommittedIntersectionType
+	{
+		RayQueryCommittedIntersectionNoneKHR = 0,
 
-      RayQueryCommittedIntersectionTriangleKHR = 1,
+		RayQueryCommittedIntersectionTriangleKHR = 1,
 
-      RayQueryCommittedIntersectionGeneratedKHR = 2,
-   }
+		RayQueryCommittedIntersectionGeneratedKHR = 2,
+	}
 }
 

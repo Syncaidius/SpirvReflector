@@ -1,22 +1,22 @@
 namespace SpirvReflector
 {
-   public enum SpirvScope
-   {
-      CrossDevice = 0,
+	public enum SpirvScope
+	{
+		CrossDevice = 0,
 
-      Device = 1,
+		Device = 1,
 
-      Workgroup = 2,
+		Workgroup = 2,
 
-      Subgroup = 3,
+		Subgroup = 3,
 
-      Invocation = 4,
+		Invocation = 4,
 
-      QueueFamily = 5,
+		QueueFamily = 5,
 
-      QueueFamilyKHR = 5,
+		QueueFamilyKHR = 5,
 
-      ShaderCallKHR = 6,
-   }
+		ShaderCallKHR = 6,
+	}
 }
 

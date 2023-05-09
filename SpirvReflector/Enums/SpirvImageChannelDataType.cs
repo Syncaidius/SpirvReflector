@@ -1,40 +1,40 @@
 namespace SpirvReflector
 {
-   public enum SpirvImageChannelDataType
-   {
-      SnormInt8 = 0,
+	public enum SpirvImageChannelDataType
+	{
+		SnormInt8 = 0,
 
-      SnormInt16 = 1,
+		SnormInt16 = 1,
 
-      UnormInt8 = 2,
+		UnormInt8 = 2,
 
-      UnormInt16 = 3,
+		UnormInt16 = 3,
 
-      UnormShort565 = 4,
+		UnormShort565 = 4,
 
-      UnormShort555 = 5,
+		UnormShort555 = 5,
 
-      UnormInt101010 = 6,
+		UnormInt101010 = 6,
 
-      SignedInt8 = 7,
+		SignedInt8 = 7,
 
-      SignedInt16 = 8,
+		SignedInt16 = 8,
 
-      SignedInt32 = 9,
+		SignedInt32 = 9,
 
-      UnsignedInt8 = 10,
+		UnsignedInt8 = 10,
 
-      UnsignedInt16 = 11,
+		UnsignedInt16 = 11,
 
-      UnsignedInt32 = 12,
+		UnsignedInt32 = 12,
 
-      HalfFloat = 13,
+		HalfFloat = 13,
 
-      Float = 14,
+		Float = 14,
 
-      UnormInt24 = 15,
+		UnormInt24 = 15,
 
-      UnormInt101010_2 = 16,
-   }
+		UnormInt101010_2 = 16,
+	}
 }
 

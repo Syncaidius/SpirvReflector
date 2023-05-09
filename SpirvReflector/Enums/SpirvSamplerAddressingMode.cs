@@ -1,16 +1,16 @@
 namespace SpirvReflector
 {
-   public enum SpirvSamplerAddressingMode
-   {
-      None = 0,
+	public enum SpirvSamplerAddressingMode
+	{
+		None = 0,
 
-      ClampToEdge = 1,
+		ClampToEdge = 1,
 
-      Clamp = 2,
+		Clamp = 2,
 
-      Repeat = 3,
+		Repeat = 3,
 
-      RepeatMirrored = 4,
-   }
+		RepeatMirrored = 4,
+	}
 }
 

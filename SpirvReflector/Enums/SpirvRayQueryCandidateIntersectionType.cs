@@ -1,10 +1,10 @@
 namespace SpirvReflector
 {
-   public enum SpirvRayQueryCandidateIntersectionType
-   {
-      RayQueryCandidateIntersectionTriangleKHR = 0,
+	public enum SpirvRayQueryCandidateIntersectionType
+	{
+		RayQueryCandidateIntersectionTriangleKHR = 0,
 
-      RayQueryCandidateIntersectionAABBKHR = 1,
-   }
+		RayQueryCandidateIntersectionAABBKHR = 1,
+	}
 }
 

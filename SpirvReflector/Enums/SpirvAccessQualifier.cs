@@ -1,12 +1,12 @@
 namespace SpirvReflector
 {
-   public enum SpirvAccessQualifier
-   {
-      ReadOnly = 0,
+	public enum SpirvAccessQualifier
+	{
+		ReadOnly = 0,
 
-      WriteOnly = 1,
+		WriteOnly = 1,
 
-      ReadWrite = 2,
-   }
+		ReadWrite = 2,
+	}
 }
 
