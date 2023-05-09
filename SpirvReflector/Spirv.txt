@@ -1,16 +1,16 @@
 
 
  
-Uninterpreted operand kind 'IdResultType' -- Category: Id
-Uninterpreted operand kind 'IdResult' -- Category: Id
-Uninterpreted operand kind 'IdMemorySemantics' -- Category: Id
-Uninterpreted operand kind 'IdScope' -- Category: Id
-Uninterpreted operand kind 'IdRef' -- Category: Id
-Uninterpreted operand kind 'LiteralInteger' -- Category: Literal
-Uninterpreted operand kind 'LiteralString' -- Category: Literal
-Uninterpreted operand kind 'LiteralContextDependentNumber' -- Category: Literal
-Uninterpreted operand kind 'LiteralExtInstInteger' -- Category: Literal
-Uninterpreted operand kind 'LiteralSpecConstantOpInteger' -- Category: Literal
-Uninterpreted operand kind 'PairLiteralIntegerIdRef' -- Category: Composite
-Uninterpreted operand kind 'PairIdRefLiteralInteger' -- Category: Composite
-Uninterpreted operand kind 'PairIdRefIdRef' -- Category: Composite
+Uninterpreted operand kind 'SpirvIdResultType' -- Category: Id
+Uninterpreted operand kind 'SpirvIdResult' -- Category: Id
+Uninterpreted operand kind 'SpirvIdMemorySemantics' -- Category: Id
+Uninterpreted operand kind 'SpirvIdScope' -- Category: Id
+Uninterpreted operand kind 'SpirvIdRef' -- Category: Id
+Uninterpreted operand kind 'SpirvLiteralInteger' -- Category: Literal
+Uninterpreted operand kind 'SpirvLiteralString' -- Category: Literal
+Uninterpreted operand kind 'SpirvLiteralContextDependentNumber' -- Category: Literal
+Uninterpreted operand kind 'SpirvLiteralExtInstInteger' -- Category: Literal
+Uninterpreted operand kind 'SpirvLiteralSpecConstantOpInteger' -- Category: Literal
+Uninterpreted operand kind 'SpirvPairLiteralIntegerIdRef' -- Category: Composite
+Uninterpreted operand kind 'SpirvPairIdRefLiteralInteger' -- Category: Composite
+Uninterpreted operand kind 'SpirvPairIdRefIdRef' -- Category: Composite

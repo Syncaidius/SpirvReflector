@@ -96,13 +96,15 @@ public class Generator
     StringBuilder _sb;
     ITextTemplatingEngineHost _host;
     string _outputPath;
+    string _typePrefix;
     SpirvDef _def;
 
-    public Generator(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string downloadUrl, string downloadPath, string genOutPath)
+    public Generator(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string typePrefix, string downloadUrl, string downloadPath, string genOutPath)
     {
         _sbHost = genEnvironment;
         _sb = new StringBuilder();
         _host = host;
+        _typePrefix = typePrefix;
         _outputPath = _host.ResolvePath(genOutPath);
 
         DownloadFile(downloadUrl, downloadPath);
@@ -119,27 +121,33 @@ public class Generator
 
         foreach(SpirvOperandKindDef kindDef in _def.OperandKinds)
         { 
+            string typeName = $"{_typePrefix}{kindDef.Kind}";
+
             if(kindDef.Category == "ValueEnum" || kindDef.Category == "BitEnum")
             {
                 Out("namespace SpirvReflector");
                 Out("{");
-                Out($"  public enum {kindDef.Kind}");
+                Out($"   public enum {typeName}");
                 Out("   {");
+                bool first = true;
                 foreach(SpirvEnumerantDef enumDef in kindDef.Enumerants)
                 {
+                    if(!first)
+					    Out("");
+
                     string valName = enumDef.Enumerant;
                     if(Char.IsDigit(valName[0]))
 						valName = $"{kindDef.Kind}{valName}";
 
                     Out($"      {valName} = {enumDef.Value},");
-                    Out("");
+                    first = false;
                 }
                 Out("   }");
                 Out("}");
-                SaveFile($"{subFolder}{kindDef.Kind}");
+                SaveFile($"{subFolder}{typeName}");
                 _sb.Clear();
             }else{
-                _sbHost.AppendLine($"Uninterpreted operand kind '{kindDef.Kind}' -- Category: {kindDef.Category}");
+                _sbHost.AppendLine($"Uninterpreted operand kind '{typeName}' -- Category: {kindDef.Category}");
             }
         }
     }
@@ -148,7 +156,7 @@ public class Generator
     {
         Out("namespace SpirvReflector");
         Out("{");
-        Out($"  public enum OpCode");
+        Out($"  public enum {_typePrefix}OpCode");
         Out("   {");
         foreach(SpirvInstructionDef instDef in _def.Instructions)
 		{

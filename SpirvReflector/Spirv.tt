@@ -14,17 +14,18 @@
     string downloadPath = this.Host.ResolvePath("Maps\\");
 
     // SPIR-V grammar file downloads
-    string[] downloads = new string[]
+    Dictionary<string, string> downloads = new Dictionary<string, string>()
     {
-        "spirv.core.grammar.json"
+        ["Spirv"] = "spirv.core.grammar.json"
     };
 
-    foreach(string file in downloads)
+    foreach(string prefix in downloads.Keys)
     {
+        string file = downloads[prefix];
         string url = $"{downloadUrl}{file}";
         string filePath = $"{downloadPath}{file}";
 
-        Generator gen = new Generator(this.GenerationEnvironment, this.Host, url, filePath, "");
+        Generator gen = new Generator(this.GenerationEnvironment, this.Host, prefix, url, filePath, "");
         gen.GenerateEnums("Enums");
         gen.GenerateOpCodeEnum();
     }

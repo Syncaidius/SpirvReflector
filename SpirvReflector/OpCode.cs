@@ -1,6 +1,6 @@
 namespace SpirvReflector
 {
-  public enum OpCode
+  public enum SpirvOpCode
    {
       OpNop = 0,
 
