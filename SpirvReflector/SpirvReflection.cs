@@ -177,16 +177,16 @@ namespace SpirvReflector
                     if (inst.Words.Count > 0)
                     {
                         string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
-                        _log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode} -- {operands}");
+                        _log.WriteLine($"I_{instID}: {opResult}{inst.OpCode} -- {operands}");
                     }
                     else
                     {
-                        _log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode}");
+                        _log.WriteLine($"I_{instID}: {opResult}{inst.OpCode}");
                     }
                 }
                 else
                 {
-                    _log.Warning($"Instruction {instID}: Unknown opcode '{inst.OpCode}' ({(uint)inst.OpCode}).");
+                    _log.Warning($"I_{instID}: Unknown opcode '{inst.OpCode}' ({(uint)inst.OpCode}).");
                 }
 
                 instID++;

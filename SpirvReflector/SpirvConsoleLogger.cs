@@ -9,6 +9,11 @@ namespace SpirvReflector
 {
     public class SpirvConsoleLogger : IReflectionLogger
     {
+        public SpirvConsoleLogger()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         public void Error(string text)
         {
             Console.ForegroundColor = ConsoleColor.Red;

@@ -8,23 +8,33 @@ namespace ExampleProject
     {
         static unsafe void Main(string[] args)
         {
-            byte[] byteCode = null;
-            using(FileStream stream = new FileStream("test_sprite_mfx.spirv", FileMode.Open, FileAccess.Read))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
-                    byteCode = reader.ReadBytes((int)stream.Length);
-            }
-
             SpirvReflection.Load();
-            IReflectionLogger logger = new SpirvConsoleLogger();
+            IReflectionLogger log = new SpirvConsoleLogger();
 
-            fixed (byte* ptrByteCode = byteCode)
+            string[] spirvFiles = Directory.GetFiles(".", "*.spirv");
+            foreach(string filename in spirvFiles)
             {
-                SpirvReflection reflect = new SpirvReflection(ptrByteCode, (nuint)byteCode.LongLength, logger);
+                log.WriteLine("--------------------------------------------------");
+                log.WriteLine($"{filename}");
+                log.WriteLine("--------------------------------------------------");
+
+                byte[] byteCode = null;
+                using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                {
+                    using (BinaryReader reader = new BinaryReader(stream))
+                        byteCode = reader.ReadBytes((int)stream.Length);
+                }
+
+                fixed (byte* ptrByteCode = byteCode)
+                {
+                    SpirvReflection reflect = new SpirvReflection(ptrByteCode, (nuint)byteCode.LongLength, log);
+                }
+
+                Console.WriteLine();
             }
 
             SpirvReflection.Unload();
-            Console.WriteLine("Press any key to exit...");
+            log.WriteLine("Press any key to exit...");
             Console.ReadKey();
         }
     }

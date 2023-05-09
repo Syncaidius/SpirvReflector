@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="test.spv" />
+    <None Remove="test.spirv" />
     <None Remove="test_sprite_mfx.spirv" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="test.spv">
+    <Content Include="test.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="test_sprite_mfx.spirv">
@@ -26,6 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpirvReflector\SpirvReflector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="gbuffer.mfx.spirv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
