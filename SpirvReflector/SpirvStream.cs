@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
+    /// <summary>
+    /// A custom stream for reading SPIR-V bytecode.
+    /// </summary>
     public unsafe class SpirvStream
     {
         const uint MAGIC_NUMBER = 0x07230203;
@@ -13,8 +16,6 @@ namespace SpirvReflector
         uint* _ptrStart;
         uint* _ptrEnd;
         uint* _ptr;
-
-
         ulong _numWords;
 
         internal SpirvStream(void* byteCode, ulong numBytes)
@@ -32,6 +33,10 @@ namespace SpirvReflector
                 throw new ArgumentException("Invalid SPIR-V bytecode.", nameof(byteCode));
         }
 
+        /// <summary>
+        /// Reads a single SPIR-V word (<see cref="uint"/>) from the stream and advances the stream position.
+        /// </summary>
+        /// <returns></returns>
         public uint ReadWord()
         {
             uint val = *_ptr;
@@ -39,6 +44,10 @@ namespace SpirvReflector
             return val;
         }
 
+        /// <summary>
+        /// Reads <see cref="SpirvInstruction"/> from the stream and advances the stream position by the number of words that make up the instruction.
+        /// </summary>
+        /// <returns></returns>
         public SpirvInstruction ReadInstruction()
         {
             SpirvInstruction inst = new SpirvInstruction(_ptr);
