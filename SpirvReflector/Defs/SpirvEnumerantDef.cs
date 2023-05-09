@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public class EnumerantDef
+    public class SpirvEnumerantDef
     {
         public string Enumerant { get; set; }
 
@@ -14,7 +14,7 @@ namespace SpirvReflector
 
         public string[] Capabilities { get; set; } = new string[0];
 
-        public KindDef[] Parameters { get; set; } = new KindDef[0];
+        public SpirvParameterDef[] Parameters { get; set; } = new SpirvParameterDef[0];
 
         public string[] Extensions { get; set; } = new string[0];
 

@@ -39,12 +39,12 @@ namespace SpirvReflector
             return val;
         }
 
-        public SpirvInstruction ReadInstruction()
-        {
-            SpirvInstruction inst =  new SpirvInstruction(_ptr);
-            _ptr += inst.WordCount;
-            return inst;
-        }
+        //public SpirvInstruction ReadInstruction()
+        //{
+        //    SpirvInstruction inst =  new SpirvInstruction(_ptr);
+        //    _ptr += inst.WordCount;
+        //    return inst;
+        //}
 
         public uint Position => (uint)(_ptr - _ptrStart) / 4U;
 

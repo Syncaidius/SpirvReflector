@@ -17,14 +17,15 @@ namespace SpirvReflector
     /// </remarks>
     public unsafe class Reflector
     {
-        static Dictionary<OpCode, InstructionDef> _defs;
-        List<SpirvInstruction> _instructions;
+        static Dictionary<SpirvOpCode, SpirvInstructionDef> _defs;
+        //List<SpirvInstruction> _instructions;
         SpirvStream _stream;
+        IReflectionLogger _log;
 
         static Reflector()
         {
-            _defs = new Dictionary<OpCode, InstructionDef>();
-            Stream stream = TryGetEmbeddedStream("spirv.core.grammer.json", typeof(InstructionDef).Assembly);
+            _defs = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
+            Stream stream = TryGetEmbeddedStream("spirv.core.grammer.json", typeof(SpirvInstructionDef).Assembly);
             if (stream != null)
             {
                 string json = null;
@@ -37,9 +38,9 @@ namespace SpirvReflector
                 {
                     try
                     {
-                        Dictionary<string, InstructionDef> instructionDefs = JsonConvert.DeserializeObject<Dictionary<string, InstructionDef>>(json);
-                        foreach (InstructionDef def in instructionDefs.Values)
-                            _defs.Add((OpCode)def.Opcode, def);
+                        Dictionary<string, SpirvInstructionDef> instructionDefs = JsonConvert.DeserializeObject<Dictionary<string, SpirvInstructionDef>>(json);
+                        foreach (SpirvInstructionDef def in instructionDefs.Values)
+                            _defs.Add((SpirvOpCode)def.Opcode, def);
                     }
                     catch (Exception ex)
                     {
@@ -76,25 +77,31 @@ namespace SpirvReflector
 
         public Reflector(void* byteCode, nuint numBytes, IReflectionLogger log)
         {
-            _instructions = new List<SpirvInstruction>();
-            _stream = new SpirvStream(byteCode, numBytes);
+            //_instructions = new List<SpirvInstruction>();
+            //_stream = new SpirvStream(byteCode, numBytes);
+            //_log = log;
 
-            // Next op is the version number.
-            SpirvVersion version = (SpirvVersion)_stream.ReadWord();
+            //// Next op is the version number.
+            //SpirvVersion version = (SpirvVersion)_stream.ReadWord();
 
-            // Next op is the generator number.
-            uint generator = _stream.ReadWord();
+            //// Next op is the generator number.
+            //uint generator = _stream.ReadWord();
 
-            // Next op is the bound number.
-            uint bound = _stream.ReadWord();
+            //// Next op is the bound number.
+            //uint bound = _stream.ReadWord();
 
-            // Next op is the schema number.
-            uint schema = _stream.ReadWord();
+            //// Next op is the schema number.
+            //uint schema = _stream.ReadWord();
 
-            ReadInstructions(log);
+            //ReadInstructions();
         }
 
-        private void ReadInstructions(IReflectionLogger log)
+        private void ReadInstructions()
+        {
+
+        }
+
+        /*private void ReadInstructions(IReflectionLogger log)
         {
             uint instID = 0;
             while (!_stream.IsEndOfStream)
@@ -102,11 +109,11 @@ namespace SpirvReflector
                 SpirvInstruction inst = _stream.ReadInstruction();
                 _instructions.Add(inst);
 
-                if (_defs.TryGetValue(inst.OpCode, out InstructionDef def))
+                if (_defs.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
                 {
-                    foreach (string wordDesc in def.Words.Keys)
+                    foreach (SpirvOperandDef opDef in def.Operands)
                     {
-                        string wordTypeName = def.Words[wordDesc];
+                        string wordTypeName = opDef.Words[wordDesc];
                         Type t = GetWordType(log, wordTypeName);
 
                         if (t != null)
@@ -145,7 +152,7 @@ namespace SpirvReflector
 
                 instID++;
             }
-        }
+        }*/
 
         private Type GetWordType(IReflectionLogger log, string typeName)
         {
