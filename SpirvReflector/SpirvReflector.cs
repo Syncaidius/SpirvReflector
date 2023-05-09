@@ -17,15 +17,22 @@ namespace SpirvReflector
     /// </remarks>
     public unsafe class Reflector
     {
-        static Dictionary<SpirvOpCode, SpirvInstructionDef> _defs;
-        List<SpirvInstruction> _instructions;
-        SpirvStream _stream;
-        IReflectionLogger _log;
+        #region Static
+        static SpirvDef _def;
+        static Dictionary<SpirvOpCode, SpirvInstructionDef> _defInstructions;
+        static bool _isLoaded;
 
-        static Reflector()
+        /// <summary>
+        /// Initializes and loads the SPIR-V definitions required by <see cref="Reflector"/> instances.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static void Load()
         {
-            _defs = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
-            Stream stream = TryGetEmbeddedStream("spirv.core.grammer.json", typeof(SpirvInstructionDef).Assembly);
+            if (_isLoaded)
+                throw new InvalidOperationException("SpirvReflector is already loaded");
+
+            _isLoaded = true;
+            Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
             // TODO Parse all json files in the embedded SpirvReflector.Maps folder.
 
             if (stream != null)
@@ -40,13 +47,11 @@ namespace SpirvReflector
                 {
                     try
                     {
-                        Dictionary<string, SpirvInstructionDef> instructionDefs = JsonConvert.DeserializeObject<Dictionary<string, SpirvInstructionDef>>(json);
-                        foreach (SpirvInstructionDef def in instructionDefs.Values)
-                            _defs.Add((SpirvOpCode)def.Opcode, def);
+                        _def = JsonConvert.DeserializeObject<SpirvDef>(json);   
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Failed to parse SPIR-V opcode definitions: {ex.Message}");
+                        Console.WriteLine($"Failed to parse SPIR-V opcode definitions: {ex.Message}");
                     }
                 }
             }
@@ -54,6 +59,20 @@ namespace SpirvReflector
             {
                 Debug.WriteLine($"SPIR-V opcode definition file not found.");
             }
+        }
+
+        /// <summary>
+        /// Unloads all SPIR-V definitions used by <see cref="Reflector"/> instances.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static void Unload()
+        {
+            if (!_isLoaded)
+                throw new InvalidOperationException("SpirvReflector is already unloaded");
+
+            _def = null;
+            _defInstructions = null;
+            _isLoaded = false;
         }
 
         /// <summary>
@@ -76,9 +95,17 @@ namespace SpirvReflector
 
             return stream;
         }
+        #endregion
+
+        List<SpirvInstruction> _instructions;
+        SpirvStream _stream;
+        IReflectionLogger _log;
 
         public Reflector(void* byteCode, nuint numBytes, IReflectionLogger log)
         {
+            if (!_isLoaded)
+                throw new InvalidOperationException($"{nameof(Reflector)}.Load() must be called before creating any instances.");
+
             _instructions = new List<SpirvInstruction>();
             _stream = new SpirvStream(byteCode, numBytes);
             _log = log;

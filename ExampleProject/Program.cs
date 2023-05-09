@@ -15,6 +15,7 @@ namespace ExampleProject
                     byteCode = reader.ReadBytes((int)stream.Length);
             }
 
+            Reflector.Load();
             IReflectionLogger logger = new SpirvConsoleLogger();
 
             fixed (byte* ptrByteCode = byteCode)
@@ -22,6 +23,7 @@ namespace ExampleProject
                 Reflector reflect = new Reflector(ptrByteCode, (nuint)byteCode.LongLength, logger);
             }
 
+            Reflector.Unload();
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
         }

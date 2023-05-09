@@ -90,6 +90,8 @@ public class SpirvOperandKindDef
     public SpirvEnumerantDef[] Enumerants { get; set; } = new SpirvEnumerantDef[0];
 
     public string Doc { get; set; }
+
+    public string[] Bases { get; set; } = new string[0];
 }
 
 public class Generator

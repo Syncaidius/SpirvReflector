@@ -15,5 +15,7 @@ namespace SpirvReflector
         public SpirvEnumerantDef[] Enumerants { get; set; } = new SpirvEnumerantDef[0];
 
         public string Doc { get; set; }
+
+        public string[] Bases { get; set; } = new string[0];
     }
 }
