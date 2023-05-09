@@ -1,5 +1,8 @@
+using System;
+
 namespace SpirvReflector
 {
+	[Flags]
 	public enum SpirvFPFastMathMode
 	{
 		None = 0x0000,

@@ -1,5 +1,8 @@
+using System;
+
 namespace SpirvReflector
 {
+	[Flags]
 	public enum SpirvFunctionControl
 	{
 		None = 0x0000,

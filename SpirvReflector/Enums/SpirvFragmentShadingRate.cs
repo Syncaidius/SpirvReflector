@@ -1,5 +1,8 @@
+using System;
+
 namespace SpirvReflector
 {
+	[Flags]
 	public enum SpirvFragmentShadingRate
 	{
 		Vertical2Pixels = 0x0001,

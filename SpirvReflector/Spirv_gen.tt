@@ -131,8 +131,21 @@ public class Generator
 
             if(kindDef.Category == "ValueEnum" || kindDef.Category == "BitEnum")
             {
-                Out("namespace SpirvReflector");
-                Out("{");
+
+                if(kindDef.Category == "BitEnum")
+                {
+                    Out("using System;");
+                    Out("");
+                    Out("namespace SpirvReflector");
+                    Out("{");
+                    Out("\t[Flags]");
+                }
+                else
+                {
+                    Out("namespace SpirvReflector");
+                    Out("{");
+                }
+
                 Out($"\tpublic enum {typeName}");
                 Out("\t{");
                 bool first = true;

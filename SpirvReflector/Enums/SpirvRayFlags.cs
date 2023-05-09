@@ -1,5 +1,8 @@
+using System;
+
 namespace SpirvReflector
 {
+	[Flags]
 	public enum SpirvRayFlags
 	{
 		NoneKHR = 0x0000,

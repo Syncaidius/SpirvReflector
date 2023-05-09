@@ -1,5 +1,8 @@
+using System;
+
 namespace SpirvReflector
 {
+	[Flags]
 	public enum SpirvMemorySemantics
 	{
 		Relaxed = 0x0000,
