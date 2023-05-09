@@ -15,7 +15,7 @@ namespace SpirvReflector
     /// <para>Main specification: https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html#_magic_number</para>
     /// <para>Physical/Data layout: https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html#PhysicalLayout</para>
     /// </remarks>
-    public unsafe class Reflector
+    public unsafe class SpirvReflection
     {
         #region Static
         static SpirvDef _def;
@@ -23,7 +23,7 @@ namespace SpirvReflector
         static bool _isLoaded;
 
         /// <summary>
-        /// Initializes and loads the SPIR-V definitions required by <see cref="Reflector"/> instances.
+        /// Initializes and loads the SPIR-V definitions required by <see cref="SpirvReflection"/> instances.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
         public static void Load()
@@ -62,7 +62,7 @@ namespace SpirvReflector
         }
 
         /// <summary>
-        /// Unloads all SPIR-V definitions used by <see cref="Reflector"/> instances.
+        /// Unloads all SPIR-V definitions used by <see cref="SpirvReflection"/> instances.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
         public static void Unload()
@@ -101,10 +101,10 @@ namespace SpirvReflector
         SpirvStream _stream;
         IReflectionLogger _log;
 
-        public Reflector(void* byteCode, nuint numBytes, IReflectionLogger log)
+        public SpirvReflection(void* byteCode, nuint numBytes, IReflectionLogger log)
         {
             if (!_isLoaded)
-                throw new InvalidOperationException($"{nameof(Reflector)}.Load() must be called before creating any instances.");
+                throw new InvalidOperationException($"{nameof(SpirvReflection)}.Load() must be called before creating any instances.");
 
             _instructions = new List<SpirvInstruction>();
             _stream = new SpirvStream(byteCode, numBytes);

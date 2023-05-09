@@ -15,15 +15,15 @@ namespace ExampleProject
                     byteCode = reader.ReadBytes((int)stream.Length);
             }
 
-            Reflector.Load();
+            SpirvReflection.Load();
             IReflectionLogger logger = new SpirvConsoleLogger();
 
             fixed (byte* ptrByteCode = byteCode)
             {
-                Reflector reflect = new Reflector(ptrByteCode, (nuint)byteCode.LongLength, logger);
+                SpirvReflection reflect = new SpirvReflection(ptrByteCode, (nuint)byteCode.LongLength, logger);
             }
 
-            Reflector.Unload();
+            SpirvReflection.Unload();
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
         }
