@@ -17,6 +17,8 @@
     <RepositoryUrl>https://github.com/Syncaidius/SpirvReflector</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>spirv; spir-v; shader; bytecode; vulkan;</PackageTags>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

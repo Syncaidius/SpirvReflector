@@ -5,6 +5,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

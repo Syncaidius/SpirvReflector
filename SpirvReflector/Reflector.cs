@@ -18,7 +18,7 @@ namespace SpirvReflector
     public unsafe class Reflector
     {
         static Dictionary<SpirvOpCode, SpirvInstructionDef> _defs;
-        //List<SpirvInstruction> _instructions;
+        List<SpirvInstruction> _instructions;
         SpirvStream _stream;
         IReflectionLogger _log;
 
@@ -77,28 +77,33 @@ namespace SpirvReflector
 
         public Reflector(void* byteCode, nuint numBytes, IReflectionLogger log)
         {
-            //_instructions = new List<SpirvInstruction>();
-            //_stream = new SpirvStream(byteCode, numBytes);
-            //_log = log;
+            _instructions = new List<SpirvInstruction>();
+            _stream = new SpirvStream(byteCode, numBytes);
+            _log = log;
 
-            //// Next op is the version number.
-            //SpirvVersion version = (SpirvVersion)_stream.ReadWord();
+            // Next op is the version number.
+            SpirvVersion version = (SpirvVersion)_stream.ReadWord();
 
-            //// Next op is the generator number.
-            //uint generator = _stream.ReadWord();
+            // Next op is the generator number.
+            uint generator = _stream.ReadWord();
 
-            //// Next op is the bound number.
-            //uint bound = _stream.ReadWord();
+            // Next op is the bound number.
+            uint bound = _stream.ReadWord();
 
-            //// Next op is the schema number.
-            //uint schema = _stream.ReadWord();
+            // Next op is the schema number.
+            uint schema = _stream.ReadWord();
 
-            //ReadInstructions();
+            ReadInstructions();
         }
 
         private void ReadInstructions()
         {
-
+            uint instID = 0;
+            while (!_stream.IsEndOfStream)
+            {
+                SpirvInstruction inst = _stream.ReadInstruction();
+                _instructions.Add(inst);
+            }
         }
 
         /*private void ReadInstructions(IReflectionLogger log)
