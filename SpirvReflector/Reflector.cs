@@ -26,6 +26,8 @@ namespace SpirvReflector
         {
             _defs = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
             Stream stream = TryGetEmbeddedStream("spirv.core.grammer.json", typeof(SpirvInstructionDef).Assembly);
+            // TODO Parse all json files in the embedded SpirvReflector.Maps folder.
+
             if (stream != null)
             {
                 string json = null;
