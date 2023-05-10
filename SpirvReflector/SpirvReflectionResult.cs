@@ -9,16 +9,32 @@ namespace SpirvReflector
     public class SpirvReflectionResult
     {
         List<SpirvInstruction> _instructions;
+        List<SpirvCapability> _capabilities;
+
 
         internal SpirvReflectionResult()
         {
             _instructions = new List<SpirvInstruction>();
+            _capabilities = new List<SpirvCapability>();
         }
 
         internal void SetInstructions(List<SpirvInstruction> instructions)
         {
             _instructions.Clear();
+            _capabilities.Clear();
+
             _instructions.AddRange(instructions);
+
+            foreach(SpirvInstruction inst in _instructions)
+            {
+                switch (inst.OpCode)
+                {
+                    case SpirvOpCode.OpCapability:
+                        SpirvWord<SpirvCapability> wCap = inst.Words[0] as SpirvWord<SpirvCapability>;
+                        _capabilities.Add(wCap.Value);
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -41,5 +57,10 @@ namespace SpirvReflector
         /// Gets the instruction schema number. This is still reserved if unused.
         /// </summary>
         public uint InstructionSchema { get; internal set; }
+
+        /// <summary>
+        /// Gets a read-only list of capabilities required to execute the bytecode.
+        /// </summary>
+        public IReadOnlyList<SpirvCapability> Capabilities => _capabilities;
     }
 }
