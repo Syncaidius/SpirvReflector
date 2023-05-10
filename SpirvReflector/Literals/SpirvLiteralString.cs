@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SpirvReflector
 {
-    public class SpirvLiteralString : SpirvLiteralInteger
+    public class SpirvLiteralString : SpirvWord
     {
         public string Value;
 

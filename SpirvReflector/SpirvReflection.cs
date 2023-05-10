@@ -133,7 +133,7 @@ namespace SpirvReflector
                             if (word is SpirvIdResult resultID)
                                 inst.Result = resultID;
                             else
-                                inst.Words.Add(word);
+                                inst.Operands.Add(word);
 
                             word.Read(inst);
                         }
@@ -144,9 +144,9 @@ namespace SpirvReflector
                     }
 
                     string opResult = inst.Result != null ? $"{inst.Result} = " : "";
-                    if (inst.Words.Count > 0)
+                    if (inst.Operands.Count > 0)
                     {
-                        string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
+                        string operands = string.Join(", ", inst.Operands.Select(x => x.ToString()));
                         _log.WriteLine($"I_{instID}: {opResult}{inst.OpCode} -- {operands}");
                     }
                     else

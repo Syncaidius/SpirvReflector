@@ -10,12 +10,14 @@ namespace SpirvReflector
     {
         List<SpirvInstruction> _instructions;
         List<SpirvCapability> _capabilities;
+        List<string> _extensions;
 
 
         internal SpirvReflectionResult()
         {
             _instructions = new List<SpirvInstruction>();
             _capabilities = new List<SpirvCapability>();
+            _extensions = new List<string>();
         }
 
         internal void SetInstructions(List<SpirvInstruction> instructions)
@@ -30,8 +32,13 @@ namespace SpirvReflector
                 switch (inst.OpCode)
                 {
                     case SpirvOpCode.OpCapability:
-                        SpirvWord<SpirvCapability> wCap = inst.Words[0] as SpirvWord<SpirvCapability>;
+                        SpirvWord<SpirvCapability> wCap = inst.Operands[0] as SpirvWord<SpirvCapability>;
                         _capabilities.Add(wCap.Value);
+                        break;
+
+                    case SpirvOpCode.OpExtension:
+                        SpirvLiteralString wExt = inst.Operands[0] as SpirvLiteralString;
+                        _extensions.Add(wExt.Value);
                         break;
                 }
             }
@@ -62,5 +69,12 @@ namespace SpirvReflector
         /// Gets a read-only list of capabilities required to execute the bytecode.
         /// </summary>
         public IReadOnlyList<SpirvCapability> Capabilities => _capabilities;
+
+        /// <summary>
+        /// Gets a read-only list of extensions required to execute the bytecode.
+        /// </summary>
+        public IReadOnlyList<string> Extensions => _extensions;
+
+        public int InstructionCount => _instructions.Count;
     }
 }
