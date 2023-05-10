@@ -8,7 +8,7 @@ namespace SpirvReflector
 {
     public interface IReflectionLogger
     {
-        void WriteLine(string value);
+        void WriteLine(string value, ConsoleColor color = ConsoleColor.White);
 
         void Error(string text);
 

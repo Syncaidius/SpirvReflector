@@ -26,9 +26,9 @@ namespace SpirvReflector
             Console.WriteLine(text);
         }
 
-        public void WriteLine(string text)
+        public void WriteLine(string text, ConsoleColor color = ConsoleColor.White)
         {
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = color;
             Console.WriteLine(text);
         }
     }

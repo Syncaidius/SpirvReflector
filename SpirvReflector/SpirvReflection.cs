@@ -84,16 +84,17 @@ namespace SpirvReflector
 
         public SpirvReflectionResult Reflect(void* byteCode, nuint numBytes)
         {
-            SpirvReflectionResult result = new SpirvReflectionResult();
             SpirvStream stream = new SpirvStream(byteCode, numBytes);
+            SpirvVersion version = (SpirvVersion)stream.ReadWord();
+            uint generator = stream.ReadWord();
+            uint bound = stream.ReadWord();
+            uint schema = stream.ReadWord();
 
-            result.Version = (SpirvVersion)stream.ReadWord();
-            result.Generator = stream.ReadWord();
-            result.Bound = stream.ReadWord();
-            result.InstructionSchema = stream.ReadWord();
-
+            SpirvReflectionResult result = new SpirvReflectionResult(ref version, generator, bound, schema);
             List<SpirvInstruction> instructions = ReadInstructions(stream);
-            result.SetInstructions(instructions);
+
+            _log.WriteLine("");
+            result.SetInstructions(instructions, _log);
 
             return result;
         }
@@ -103,6 +104,7 @@ namespace SpirvReflector
             List<SpirvInstruction> instructions = new List<SpirvInstruction>();
 
             uint instID = 0;
+            _log.WriteLine("Raw:", ConsoleColor.Green);
             while (!stream.IsEndOfStream)
             {
                 SpirvInstruction inst = stream.ReadInstruction();

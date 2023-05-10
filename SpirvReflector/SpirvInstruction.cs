@@ -18,6 +18,23 @@ namespace SpirvReflector
             Operands = new List<SpirvWord>();
         }
 
+        /// <summary>
+        /// Attempts to retrieve an operand value of the specified type, if present. Returns the default value of <typeparamref name="T"/> if no operand of the specified type is present.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetOperandValue<T>()
+            where T : unmanaged
+        {
+            foreach(SpirvWord w in Operands)
+            {
+                if (w is SpirvWord<T> wt)
+                    return wt.Value;
+            }
+
+            return default;
+        }
+
         public uint ReadWord()
         {
             return _ptr[_readIndex++];
