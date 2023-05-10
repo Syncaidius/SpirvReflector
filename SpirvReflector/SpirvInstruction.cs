@@ -81,6 +81,8 @@ namespace SpirvReflector
 
         public SpirvIdResult Result { get; set; }
 
+        public uint UnreadWordCount => WordCount - _readIndex;
+
         public uint* Ptr => _ptr;
     }
 }

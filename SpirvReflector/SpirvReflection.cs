@@ -146,6 +146,10 @@ namespace SpirvReflector
                 {
                     foreach (SpirvOperandDef opDef in def.Operands)
                     {
+                        // Skip optional operands if they are not present.
+                        if (opDef.Quantifier == "?" && inst.UnreadWordCount == 0)
+                            continue;
+
                         // Check if the type is an enum.
                         string wordTypeName = $"Spirv{opDef.Kind}";
                         Type t = GetWordType(wordTypeName);
