@@ -17,21 +17,13 @@ namespace SpirvReflector
     /// </remarks>
     public unsafe class SpirvReflection
     {
-        #region Static
-        static SpirvDef _def;
-        static Dictionary<SpirvOpCode, SpirvInstructionDef> _defInstructions;
-        static bool _isLoaded;
+        IReflectionLogger _log;
+        SpirvDef _def;
+        Dictionary<SpirvOpCode, SpirvInstructionDef> _defInstructions;
 
-        /// <summary>
-        /// Initializes and loads the SPIR-V definitions required by <see cref="SpirvReflection"/> instances.
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        public static void Load()
+        public SpirvReflection(IReflectionLogger log)
         {
-            if (_isLoaded)
-                throw new InvalidOperationException("SpirvReflector is already loaded");
-
-            _isLoaded = true;
+            _log = log;
             _defInstructions = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
 
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
@@ -53,7 +45,7 @@ namespace SpirvReflector
                         _def = JsonConvert.DeserializeObject<SpirvDef>(json);
                         foreach (SpirvInstructionDef inst in _def.Instructions)
                         {
-                            if(!_defInstructions.TryAdd((SpirvOpCode)inst.Opcode, inst))
+                            if (!_defInstructions.TryAdd((SpirvOpCode)inst.Opcode, inst))
                                 Console.WriteLine($"Skipping duplicate opcode definition: {inst.OpName} ({inst.Opcode})");
                         }
                     }
@@ -70,27 +62,12 @@ namespace SpirvReflector
         }
 
         /// <summary>
-        /// Unloads all SPIR-V definitions used by <see cref="SpirvReflection"/> instances.
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        public static void Unload()
-        {
-            if (!_isLoaded)
-                throw new InvalidOperationException("SpirvReflector is already unloaded");
-
-            _def = null;
-            _defInstructions = null;
-
-            _isLoaded = false;
-        }
-
-        /// <summary>
         /// Attempts to open an embedded resource file and returns a <see cref="Stream"/> if successful.
         /// </summary>
         /// <param name="filename">The name of the embedded resource to be loaded.</param>
         /// <param name="assembly">The assembly from which to retrieve a stream. If null, <see cref="Assembly.GetExecutingAssembly()"/> will be used.</param>
         /// <returns></returns>
-        private static Stream TryGetEmbeddedStream(string filename, Assembly assembly = null)
+        private Stream TryGetEmbeddedStream(string filename, Assembly assembly = null)
         {
             if (assembly == null)
                 assembly = Assembly.GetExecutingAssembly();
@@ -104,43 +81,32 @@ namespace SpirvReflector
 
             return stream;
         }
-        #endregion
 
-        List<SpirvInstruction> _instructions;
-        SpirvStream _stream;
-        IReflectionLogger _log;
-
-        public SpirvReflection(void* byteCode, nuint numBytes, IReflectionLogger log)
+        public SpirvReflectionResult Reflect(void* byteCode, nuint numBytes)
         {
-            if (!_isLoaded)
-                throw new InvalidOperationException($"{nameof(SpirvReflection)}.Load() must be called before creating any instances.");
+            SpirvReflectionResult result = new SpirvReflectionResult();
+            SpirvStream stream = new SpirvStream(byteCode, numBytes);
 
-            _instructions = new List<SpirvInstruction>();
-            _stream = new SpirvStream(byteCode, numBytes);
-            _log = log;
+            result.Version = (SpirvVersion)stream.ReadWord();
+            result.Generator = stream.ReadWord();
+            result.Bound = stream.ReadWord();
+            result.InstructionSchema = stream.ReadWord();
 
-            // Next op is the version number.
-            SpirvVersion version = (SpirvVersion)_stream.ReadWord();
+            List<SpirvInstruction> instructions = ReadInstructions(stream);
+            result.SetInstructions(instructions);
 
-            // Next op is the generator number.
-            uint generator = _stream.ReadWord();
-
-            // Next op is the bound number.
-            uint bound = _stream.ReadWord();
-
-            // Next op is the schema number.
-            uint schema = _stream.ReadWord();
-
-            ReadInstructions();
+            return result;
         }
 
-        private void ReadInstructions()
+        private List<SpirvInstruction> ReadInstructions(SpirvStream stream)
         {
+            List<SpirvInstruction> instructions = new List<SpirvInstruction>();
+
             uint instID = 0;
-            while (!_stream.IsEndOfStream)
+            while (!stream.IsEndOfStream)
             {
-                SpirvInstruction inst = _stream.ReadInstruction();
-                _instructions.Add(inst);
+                SpirvInstruction inst = stream.ReadInstruction();
+                instructions.Add(inst);
 
                 if (_defInstructions.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
                 {
@@ -195,6 +161,8 @@ namespace SpirvReflector
 
                 instID++;
             }
+
+            return instructions;
         }
 
         private Type GetWordType(string typeName)
@@ -238,9 +206,5 @@ namespace SpirvReflector
 
             return t;
         }
-
-
-
-
     }
 }

@@ -8,8 +8,8 @@ namespace ExampleProject
     {
         static unsafe void Main(string[] args)
         {
-            SpirvReflection.Load();
             IReflectionLogger log = new SpirvConsoleLogger();
+            SpirvReflection reflection = new SpirvReflection(log);
 
             string[] spirvFiles = Directory.GetFiles(".", "*.spirv");
             foreach(string filename in spirvFiles)
@@ -27,13 +27,12 @@ namespace ExampleProject
 
                 fixed (byte* ptrByteCode = byteCode)
                 {
-                    SpirvReflection reflect = new SpirvReflection(ptrByteCode, (nuint)byteCode.LongLength, log);
+                    SpirvReflectionResult result = reflection.Reflect(ptrByteCode, (nuint)byteCode.LongLength);
                 }
 
                 Console.WriteLine();
             }
 
-            SpirvReflection.Unload();
             log.WriteLine("Press any key to exit...");
             Console.ReadKey();
         }
