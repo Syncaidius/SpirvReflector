@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public unsafe class SpirvInstruction
+    public unsafe class SpirvInstruction : SpirvBytecodeElement
     {
         uint* _ptr;
         uint _readIndex;

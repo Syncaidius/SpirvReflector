@@ -166,7 +166,7 @@ namespace SpirvReflector
             return instructions;
         }
 
-        private string GetOperandString(SpirvInstruction instruction)
+        internal static string GetOperandString(SpirvInstruction instruction)
         {
             string result = "";
             for(int i = 0; i < instruction.Operands.Count; i++)

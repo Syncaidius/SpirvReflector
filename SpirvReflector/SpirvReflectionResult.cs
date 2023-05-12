@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpirvReflector
 {
@@ -16,34 +15,20 @@ namespace SpirvReflector
             public string Name { get; internal set; }
         }
 
-        public class SpirvFunction
-        {
-            internal List<SpirvInstruction> Instructions { get; } = new List<SpirvInstruction>();
-
-            internal SpirvInstruction Start { get; set; }
-
-            internal SpirvInstruction End { get; set; }
-
-            public SpirvWord ReturnType { get; internal set; }
-
-            public SpirvFunctionControl Control { get; internal set; }
-
-            public int InstructionCount => Instructions.Count;
-        }
-
-
         SpirvInstruction[] _assignments;
 
         List<SpirvInstruction> _instructions;
+        List<SpirvBytecodeElement> _elements;
+
         List<SpirvCapability> _capabilities;
         List<SpirvFunction> _functions;
         List<EntryPoint> _entryPoints;
         List<string> _extensions;
 
-
         internal SpirvReflectionResult(ref SpirvVersion version, uint generator, uint bound, uint schema)
         {
             _instructions = new List<SpirvInstruction>();
+            _elements = new List<SpirvBytecodeElement>();
 
             _capabilities = new List<SpirvCapability>();
             _extensions = new List<string>();
@@ -62,7 +47,9 @@ namespace SpirvReflector
             _instructions.Clear();
             _capabilities.Clear();
             _instructions.AddRange(instructions);
+            _elements.AddRange(_instructions);
 
+            InstructionCount = instructions.Count;
             InitialPass();
             FunctionPass();
 
@@ -74,15 +61,56 @@ namespace SpirvReflector
             log.WriteLine($"Extensions: {exts}");
             log.WriteLine($"Memory Model: {AddressingModel} -- {MemoryModel}");
 
-            foreach(SpirvFunction func in _functions)
+            uint eID = 0;
+            foreach(SpirvBytecodeElement element in _elements)
             {
-                log.WriteLine($"Function() -- {func.Start}");
-                log.WriteLine($"{{");
-                foreach(SpirvInstruction inst in func.Instructions)
+                switch (element)
                 {
-                    log.WriteLine($"    {inst}");
+                    case SpirvInstruction inst:
+                        {
+                            string opResult = inst.Result != null ? $"{inst.Result} = " : "";
+                            if (inst.Operands.Count > 0)
+                            {
+                                string operands = SpirvReflection.GetOperandString(inst);
+                                log.WriteLine($"E_{eID}: {opResult}{inst.OpCode} -- {operands}");
+                            }
+                            else
+                            {
+                                log.WriteLine($"E_{eID}: {opResult}{inst.OpCode}");
+                            }
+                        }
+                        break;
+
+                    case SpirvFunction func:
+                        {
+                            log.WriteLine($"E_{eID}: Function() -- {SpirvReflection.GetOperandString(func.Start)}");
+                            log.WriteLine($"{{");
+                            foreach (SpirvInstruction inst in func.Instructions)
+                            {
+                                log.WriteLine($"    {inst}");
+                            }
+                            log.WriteLine($"}}");
+                        }
+                        break;
                 }
-                log.WriteLine($"}}");
+
+                eID++;
+                
+            }
+        }
+
+        private void Pass(Action<SpirvInstruction> parseCallback)
+        {
+            if (parseCallback == null)
+                throw new ArgumentNullException("parseCallback cannot be null");
+
+            List<SpirvBytecodeElement> elements = new List<SpirvBytecodeElement>(_elements);
+            foreach (SpirvBytecodeElement el in elements)
+            {
+                if (el is not SpirvInstruction inst)
+                    continue;
+
+                parseCallback(inst);
             }
         }
 
@@ -93,7 +121,7 @@ namespace SpirvReflector
         /// </summary>
         private void InitialPass()
         {
-            foreach (SpirvInstruction inst in _instructions)
+            Pass((inst) =>
             {
                 if (inst.Result != null)
                     _assignments[inst.Result.Value] = inst;
@@ -115,7 +143,7 @@ namespace SpirvReflector
                         MemoryModel = inst.GetOperand<SpirvMemoryModel>();
                         break;
 
-                    case SpirvOpCode.OpEntryPoint:
+                    /*case SpirvOpCode.OpEntryPoint:
                         EntryPoint entry = new EntryPoint();
                         SpirvLiteralString ep = inst.GetOperandWord<SpirvLiteralString>();
 
@@ -125,9 +153,14 @@ namespace SpirvReflector
                             entry.Name = ep.Value;
                             _entryPoints.Add(entry);
                         }
-                        break;
+                        break;*/
+
+                    default:
+                        return;
                 }
-            }
+
+                _elements.Remove(inst);
+            });
         }
 
         /// <summary>
@@ -135,11 +168,10 @@ namespace SpirvReflector
         /// </summary>
         private void FunctionPass()
         {
-            // Use a stack so that we support nested functions (if/when they're supported).
             Stack<SpirvFunction> funcStack = new Stack<SpirvFunction>();
             SpirvFunction curFunc = null;
 
-            foreach (SpirvInstruction inst in _instructions)
+            Pass((inst) =>
             {
                 switch (inst.OpCode)
                 {
@@ -155,6 +187,7 @@ namespace SpirvReflector
                             Start = inst,
                         };
                         _functions.Add(curFunc);
+                        _elements.Add(curFunc);
                         break;
 
                     case SpirvOpCode.OpFunctionEnd:
@@ -171,10 +204,15 @@ namespace SpirvReflector
 
                     default:
                         if (curFunc != null)
+                        {
                             curFunc.Instructions.Add(inst);
-                        break;
+                            break;
+                        }
+                        return;
                 }
-            }
+
+                _elements.Remove(inst);
+            });
         }
 
         /// <summary>
@@ -216,7 +254,7 @@ namespace SpirvReflector
         /// <summary>
         /// Gets the total number of instructions in the bytecode.
         /// </summary>
-        public int InstructionCount => _instructions.Count;
+        public int InstructionCount { get; private set; }
 
         /// <summary>
         /// Gets the memory addressing model used by the bytecode.
