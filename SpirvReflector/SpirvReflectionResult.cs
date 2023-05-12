@@ -8,18 +8,29 @@ namespace SpirvReflector
 {
     public class SpirvReflectionResult
     {
+        public class EntryPoint
+        {
+            public SpirvExecutionModel ExecutionModel { get; set; }
+
+            public string Name { get; set; }
+        }
+
+
         SpirvInstruction[] _assignments;
 
         List<SpirvInstruction> _instructions;
         List<SpirvCapability> _capabilities;
+        List<EntryPoint> _entryPoints;
         List<string> _extensions;
 
 
         internal SpirvReflectionResult(ref SpirvVersion version, uint generator, uint bound, uint schema)
         {
             _instructions = new List<SpirvInstruction>();
+
             _capabilities = new List<SpirvCapability>();
             _extensions = new List<string>();
+            _entryPoints = new List<EntryPoint>();
             _assignments = new SpirvInstruction[bound];
 
             Version = version;
@@ -57,8 +68,28 @@ namespace SpirvReflector
                         AddressingModel = inst.GetOperandValue<SpirvAddressingModel>();
                         MemoryModel = inst.GetOperandValue<SpirvMemoryModel>();
                         break;
+
+                    case SpirvOpCode.OpEntryPoint:
+                        EntryPoint entry = new EntryPoint();
+                        SpirvLiteralString ep = inst.GetOperandWord<SpirvLiteralString>();
+
+                        if (ep != null)
+                        {
+                            entry.ExecutionModel = inst.GetOperandValue<SpirvExecutionModel>();
+                            entry.Name = ep.Value;
+                            _entryPoints.Add(entry);
+                        }
+                        break;
                 }
             }
+
+            string caps = string.Join(", ", _capabilities.Select(c => c.ToString()));
+            log.WriteLine($"Capabilities: {caps}");
+
+            string exts = string.Join(", ", _extensions);
+            log.WriteLine($"Extensions: {exts}");
+
+            log.WriteLine($"Memory Model: {AddressingModel} -- {MemoryModel}");
         }
 
         /// <summary>
@@ -91,6 +122,11 @@ namespace SpirvReflector
         /// Gets a read-only list of extensions required to execute the bytecode.
         /// </summary>
         public IReadOnlyList<string> Extensions => _extensions;
+
+        /// <summary>
+        /// Gets a list of entry points that were found in the bytecode.
+        /// </summary>
+        public IReadOnlyList<EntryPoint> EntryPoints => _entryPoints;
 
         /// <summary>
         /// Gets the total number of instructions in the bytecode.

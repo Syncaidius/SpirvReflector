@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public class SpirvLiteralContextDependentNumber : SpirvIdRef { }
+    public class SpirvLiteralContextDependentNumber : SpirvWord<uint> { }
 }

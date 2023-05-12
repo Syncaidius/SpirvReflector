@@ -11,12 +11,26 @@ namespace SpirvReflector
 
         public override unsafe void Read(SpirvInstruction instruction)
         {
-            byte* ptr = (byte*)instruction.ReadRemainingWords(out uint numWords);
-            Value = Encoding.UTF8.GetString(ptr, (int)(numWords * sizeof(uint)));
-            int nullIndex = Value.IndexOf('\0');
+            Value = "";
 
-            if(nullIndex > -1)
-                Value = Value.Substring(0, nullIndex);
+            while (instruction.UnreadWordCount > 0)
+            {
+                // Read only until we hit a null terminator.
+                uint* ptr = instruction.ReadWordPtr();
+
+                string result = Encoding.UTF8.GetString((byte*)ptr, sizeof(uint));
+                int nullIndex = result.IndexOf('\0');
+
+                if (nullIndex > -1)
+                {
+                    Value += result.Substring(0, nullIndex);
+                    break;
+                }
+                else
+                {
+                    Value += result;
+                }
+            }
         }
 
         public override string ToString()

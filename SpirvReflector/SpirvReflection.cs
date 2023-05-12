@@ -118,6 +118,11 @@ namespace SpirvReflector
                         if (opDef.Quantifier == "?" && inst.UnreadWordCount == 0)
                             continue;
 
+                        if (inst.OpCode == SpirvOpCode.OpEntryPoint)
+                        {
+
+                        }
+
                         // Check if the type is an enum.
                         string wordTypeName = $"Spirv{opDef.Kind}";
                         Type t = GetWordType(wordTypeName);

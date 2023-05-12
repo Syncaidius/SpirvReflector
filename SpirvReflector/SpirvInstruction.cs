@@ -35,6 +35,18 @@ namespace SpirvReflector
             return default;
         }
 
+        public T GetOperandWord<T>()
+            where T : SpirvWord
+        {
+            foreach(SpirvWord w in Operands)
+            {
+                if (w is T wt)
+                    return wt;
+            }
+
+            return null;
+        }
+
         public uint ReadWord()
         {
             return _ptr[_readIndex++];
