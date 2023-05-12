@@ -77,17 +77,6 @@ namespace SpirvReflector
             return ptrStart;
         }
 
-        /// <summary>
-        /// Reads all remaining words for the current <see cref="SpirvInstruction"/>. Outputs the number of words read to <paramref name="numWords"/>.
-        /// </summary>
-        /// <param name="numWords"></param>
-        /// <returns></returns>
-        public uint* ReadRemainingWords(out uint numWords)
-        {
-            numWords = WordCount - _readIndex;
-            return ReadWords(numWords);
-        }
-
         public override string ToString()
         {
             if (Operands.Count > 0)
