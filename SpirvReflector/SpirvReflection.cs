@@ -134,9 +134,8 @@ namespace SpirvReflector
 
                             if (word is SpirvIdResult resultID)
                                 inst.Result = resultID;
-                            else
-                                inst.Operands.Add(word);
 
+                            inst.Operands.Add(word);
                             word.Read(inst);
                         }
                         else
@@ -148,7 +147,7 @@ namespace SpirvReflector
                     string opResult = inst.Result != null ? $"{inst.Result} = " : "";
                     if (inst.Operands.Count > 0)
                     {
-                        string operands = string.Join(", ", inst.Operands.Select(x => x.ToString()));
+                        string operands = GetOperandString(inst);
                         _log.WriteLine($"I_{instID}: {opResult}{inst.OpCode} -- {operands}");
                     }
                     else
@@ -165,6 +164,23 @@ namespace SpirvReflector
             }
 
             return instructions;
+        }
+
+        private string GetOperandString(SpirvInstruction instruction)
+        {
+            string result = "";
+            for(int i = 0; i < instruction.Operands.Count; i++)
+            {
+                if (instruction.Operands[i] is SpirvIdResult)
+                    continue;
+
+                if (result.Length > 0)
+                    result += ", ";
+
+                result += instruction.Operands[i].ToString();
+            }
+
+            return result;
         }
 
         private Type GetWordType(string typeName)

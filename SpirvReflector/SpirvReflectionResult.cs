@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpirvReflector
 {
@@ -10,9 +11,24 @@ namespace SpirvReflector
     {
         public class EntryPoint
         {
-            public SpirvExecutionModel ExecutionModel { get; set; }
+            public SpirvExecutionModel ExecutionModel { get; internal set; }
 
-            public string Name { get; set; }
+            public string Name { get; internal set; }
+        }
+
+        public class SpirvFunction
+        {
+            internal List<SpirvInstruction> Instructions { get; } = new List<SpirvInstruction>();
+
+            internal SpirvInstruction Start { get; set; }
+
+            internal SpirvInstruction End { get; set; }
+
+            public SpirvWord ReturnType { get; internal set; }
+
+            public SpirvFunctionControl Control { get; internal set; }
+
+            public int InstructionCount => Instructions.Count;
         }
 
 
@@ -20,6 +36,7 @@ namespace SpirvReflector
 
         List<SpirvInstruction> _instructions;
         List<SpirvCapability> _capabilities;
+        List<SpirvFunction> _functions;
         List<EntryPoint> _entryPoints;
         List<string> _extensions;
 
@@ -30,6 +47,7 @@ namespace SpirvReflector
 
             _capabilities = new List<SpirvCapability>();
             _extensions = new List<string>();
+            _functions = new List<SpirvFunction>();
             _entryPoints = new List<EntryPoint>();
             _assignments = new SpirvInstruction[bound];
 
@@ -45,9 +63,37 @@ namespace SpirvReflector
             _capabilities.Clear();
             _instructions.AddRange(instructions);
 
-            log.WriteLine("Translated:", ConsoleColor.Green);
+            InitialPass();
+            FunctionPass();
 
-            foreach(SpirvInstruction inst in _instructions)
+            string caps = string.Join(", ", _capabilities.Select(c => c.ToString()));
+            string exts = string.Join(", ", _extensions);
+
+            log.WriteLine("Translated:", ConsoleColor.Green);
+            log.WriteLine($"Capabilities: {caps}");
+            log.WriteLine($"Extensions: {exts}");
+            log.WriteLine($"Memory Model: {AddressingModel} -- {MemoryModel}");
+
+            foreach(SpirvFunction func in _functions)
+            {
+                log.WriteLine($"Function() -- {func.Start}");
+                log.WriteLine($"{{");
+                foreach(SpirvInstruction inst in func.Instructions)
+                {
+                    log.WriteLine($"    {inst}");
+                }
+                log.WriteLine($"}}");
+            }
+        }
+
+        /// <summary>
+        /// Builds initial structure data. 
+        /// 
+        /// <para>Generally, this is pulled from instructions that do not reference any assigned values, as the assignment list has to be built during this pass.</para>
+        /// </summary>
+        private void InitialPass()
+        {
+            foreach (SpirvInstruction inst in _instructions)
             {
                 if (inst.Result != null)
                     _assignments[inst.Result.Value] = inst;
@@ -65,8 +111,8 @@ namespace SpirvReflector
                         break;
 
                     case SpirvOpCode.OpMemoryModel:
-                        AddressingModel = inst.GetOperandValue<SpirvAddressingModel>();
-                        MemoryModel = inst.GetOperandValue<SpirvMemoryModel>();
+                        AddressingModel = inst.GetOperand<SpirvAddressingModel>();
+                        MemoryModel = inst.GetOperand<SpirvMemoryModel>();
                         break;
 
                     case SpirvOpCode.OpEntryPoint:
@@ -75,21 +121,60 @@ namespace SpirvReflector
 
                         if (ep != null)
                         {
-                            entry.ExecutionModel = inst.GetOperandValue<SpirvExecutionModel>();
+                            entry.ExecutionModel = inst.GetOperand<SpirvExecutionModel>();
                             entry.Name = ep.Value;
                             _entryPoints.Add(entry);
                         }
                         break;
                 }
             }
+        }
 
-            string caps = string.Join(", ", _capabilities.Select(c => c.ToString()));
-            log.WriteLine($"Capabilities: {caps}");
+        /// <summary>
+        /// Builds function information.
+        /// </summary>
+        private void FunctionPass()
+        {
+            // Use a stack so that we support nested functions (if/when they're supported).
+            Stack<SpirvFunction> funcStack = new Stack<SpirvFunction>();
+            SpirvFunction curFunc = null;
 
-            string exts = string.Join(", ", _extensions);
-            log.WriteLine($"Extensions: {exts}");
+            foreach (SpirvInstruction inst in _instructions)
+            {
+                switch (inst.OpCode)
+                {
+                    case SpirvOpCode.OpFunction:
+                        if (curFunc != null)
+                            funcStack.Push(curFunc);
 
-            log.WriteLine($"Memory Model: {AddressingModel} -- {MemoryModel}");
+                        uint returnTypeId = inst.GetOperand<uint>(0);
+                        curFunc = new SpirvFunction()
+                        {
+                            ReturnType = _assignments[returnTypeId].Result,
+                            Control = inst.GetOperand<SpirvFunctionControl>(2),
+                            Start = inst,
+                        };
+                        _functions.Add(curFunc);
+                        break;
+
+                    case SpirvOpCode.OpFunctionEnd:
+                        if (curFunc != null)
+                        {
+                            curFunc.End = inst;
+
+                            if (funcStack.Count > 0)
+                                curFunc = funcStack.Pop();
+                            else
+                                curFunc = null;
+                        }
+                        break;
+
+                    default:
+                        if (curFunc != null)
+                            curFunc.Instructions.Add(inst);
+                        break;
+                }
+            }
         }
 
         /// <summary>
