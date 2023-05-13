@@ -14,7 +14,7 @@ namespace SpirvReflector
 
         internal SpirvInstruction End { get; set; }
 
-        public SpirvInstruction ReturnType { get; internal set; }
+        public SpirvType ReturnType { get; internal set; }
 
         public SpirvFunctionControl Control { get; internal set; }
 

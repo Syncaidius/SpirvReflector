@@ -78,7 +78,6 @@ namespace SpirvReflector
             return parser;
         }
 
-
         /// <summary>
         /// Attempts to open an embedded resource file and returns a <see cref="Stream"/> if successful.
         /// </summary>

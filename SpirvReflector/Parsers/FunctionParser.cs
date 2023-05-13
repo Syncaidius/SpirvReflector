@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpirvReflector
 {
@@ -16,6 +15,7 @@ namespace SpirvReflector
         public FunctionParser()
         {
             AddPrerequisite<InitialParser>();
+            AddPrerequisite<TypeParser>();
         }
 
         protected override void OnParse(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
@@ -26,16 +26,19 @@ namespace SpirvReflector
                     if (_curFunc != null)
                         _funcStack.Push(_curFunc);
 
-                    uint returnTypeId = inst.GetOperand<uint>(0);
                     _curFunc = new SpirvFunction()
                     {
-                        ReturnType = result.Assignments[returnTypeId],
                         Control = inst.GetOperand<SpirvFunctionControl>(2),
                         Start = inst,
                     };
+
+                    uint returnTypeId = inst.GetOperand<uint>(0);
+                    if (result.OpTypes.TryGetValue(returnTypeId, out SpirvType returnType))
+                        _curFunc.ReturnType = returnType;
+
                     result.Functions.Add(_curFunc);
-                    result.Elements.Add(_curFunc);
-                    break;
+                    result.ReplaceElement(inst, _curFunc);
+                    return;
 
                 case SpirvOpCode.OpFunctionEnd:
                     if (_curFunc != null)

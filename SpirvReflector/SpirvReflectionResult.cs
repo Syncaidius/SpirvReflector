@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SpirvReflector
 {
@@ -18,6 +19,7 @@ namespace SpirvReflector
         internal List<SpirvBytecodeElement> Elements;
 
         internal SpirvInstruction[] Assignments;
+        internal Dictionary<uint, SpirvType> OpTypes;
 
         internal List<SpirvFunction> Functions;
 
@@ -35,7 +37,9 @@ namespace SpirvReflector
 
             Elements = new List<SpirvBytecodeElement>();
             Functions = new List<SpirvFunction>();
+
             Assignments = new SpirvInstruction[bound];
+            OpTypes = new Dictionary<uint, SpirvType>();
 
             _capabilities = new List<SpirvCapability>();
             _sources = new List<SpirvSource>();
@@ -79,6 +83,12 @@ namespace SpirvReflector
             }
         }
 
+        internal void ReplaceElement(SpirvBytecodeElement element, SpirvBytecodeElement replacement)
+        {
+            int index = Elements.IndexOf(element);
+            if (index > -1)
+                Elements[index] = replacement;
+        }
 
         internal void SetInstructions(SpirvReflection reflection, List<SpirvInstruction> instructions, IReflectionLogger log)
         {
@@ -124,7 +134,7 @@ namespace SpirvReflector
                         {
                             string returnType = "";
                             if (func.ReturnType != null)
-                                returnType = func.ReturnType.OpCode.ToString().Replace("Spirv", "") + " ";
+                                returnType = $"{(func.ReturnType.Name ?? func.ReturnType.Kind.ToString())} ";
 
                             // TODO fetch function parameter definition
                             SpirvFunctionControl funcControl = func.Start.GetOperand<SpirvFunctionControl>();
@@ -139,6 +149,10 @@ namespace SpirvReflector
                                 log.WriteLine($"    {inst}");
                             log.WriteLine($"}}");
                         }
+                        break;
+
+                    default:
+                        log.WriteLine($"E_{eID}: {element}");
                         break;
                 }
 
