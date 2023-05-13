@@ -8,5 +8,6 @@ namespace SpirvReflector
 {
     public abstract class SpirvBytecodeElement
     {
+        protected SpirvBytecodeElement() { }
     }
 }

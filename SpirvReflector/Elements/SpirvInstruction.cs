@@ -53,6 +53,15 @@ namespace SpirvReflector
             return (Operands[index] as SpirvWord<T>).Value;
         }
 
+        public string GetOperandString(int index)
+        {
+            if (index >= Operands.Count)
+                return null;
+
+            SpirvLiteralString str = Operands[index] as SpirvLiteralString;
+            return str?.Value;
+        }
+
         public uint ReadWord()
         {
             return _ptr[_readIndex++];

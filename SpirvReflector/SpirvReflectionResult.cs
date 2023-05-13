@@ -21,6 +21,7 @@ namespace SpirvReflector
         List<SpirvBytecodeElement> _elements;
 
         List<SpirvCapability> _capabilities;
+        List<SpirvSource> _sources;
         List<SpirvFunction> _functions;
         List<EntryPoint> _entryPoints;
         List<string> _extensions;
@@ -31,6 +32,7 @@ namespace SpirvReflector
             _elements = new List<SpirvBytecodeElement>();
 
             _capabilities = new List<SpirvCapability>();
+            _sources = new List<SpirvSource>();
             _extensions = new List<string>();
             _functions = new List<SpirvFunction>();
             _entryPoints = new List<EntryPoint>();
@@ -143,6 +145,25 @@ namespace SpirvReflector
                         MemoryModel = inst.GetOperand<SpirvMemoryModel>();
                         break;
 
+                    case SpirvOpCode.OpSource:
+                        SpirvSource src = new SpirvSource()
+                        {
+                            Language = inst.GetOperand<SpirvSourceLanguage>(),
+                            Version = inst.GetOperand<uint>(1),
+                            Source = inst.GetOperandString(3),
+                        };
+
+                        // Filename is optional.
+                        if (inst.Operands.Count >= 3)
+                        {
+                            uint fnID = inst.GetOperand<uint>(2);
+                            SpirvInstruction fn = _assignments[fnID];
+                            src.Filename = fn.GetOperandString(1);
+                        }
+
+                        _sources.Add(src);
+                        break;
+
                     /*case SpirvOpCode.OpEntryPoint:
                         EntryPoint entry = new EntryPoint();
                         SpirvLiteralString ep = inst.GetOperandWord<SpirvLiteralString>();
@@ -245,6 +266,11 @@ namespace SpirvReflector
         /// Gets a read-only list of extensions required to execute the bytecode.
         /// </summary>
         public IReadOnlyList<string> Extensions => _extensions;
+
+        /// <summary>
+        /// Gets a list of sources that the bytecode was originally translated from.
+        /// </summary>
+        public IReadOnlyList<SpirvSource> Sources => _sources;
 
         /// <summary>
         /// Gets a list of entry points that were found in the bytecode.
