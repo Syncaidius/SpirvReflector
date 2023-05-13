@@ -85,12 +85,21 @@ namespace SpirvReflector
 
                     case SpirvFunction func:
                         {
-                            log.WriteLine($"E_{eID}: Function() -- {SpirvReflection.GetOperandString(func.Start)}");
+                            string returnType = "";
+                            if (func.ReturnType != null)
+                                returnType = func.ReturnType.OpCode.ToString().Replace("Spirv", "") + " ";
+
+                            // TODO fetch function parameter definition
+                            SpirvFunctionControl funcControl = func.Start.GetOperand<SpirvFunctionControl>();
+                            uint defID = func.Start.GetOperand<uint>(3);
+                            SpirvInstruction funcDef = _assignments[defID];
+
+                            log.WriteLine($"E_{eID}:");
+                            log.WriteLine($"[FunctionControl.{funcControl}]");
+                            log.WriteLine($"{returnType}Function()");
                             log.WriteLine($"{{");
                             foreach (SpirvInstruction inst in func.Instructions)
-                            {
                                 log.WriteLine($"    {inst}");
-                            }
                             log.WriteLine($"}}");
                         }
                         break;
@@ -164,6 +173,12 @@ namespace SpirvReflector
                         _sources.Add(src);
                         break;
 
+                    // Dump any instructions we don't care about.
+                    case SpirvOpCode.OpLine:
+                    case SpirvOpCode.OpNoLine:
+                    case SpirvOpCode.OpModuleProcessed:
+                        break;
+
                     /*case SpirvOpCode.OpEntryPoint:
                         EntryPoint entry = new EntryPoint();
                         SpirvLiteralString ep = inst.GetOperandWord<SpirvLiteralString>();
@@ -203,7 +218,7 @@ namespace SpirvReflector
                         uint returnTypeId = inst.GetOperand<uint>(0);
                         curFunc = new SpirvFunction()
                         {
-                            ReturnType = _assignments[returnTypeId].Result,
+                            ReturnType = _assignments[returnTypeId],
                             Control = inst.GetOperand<SpirvFunctionControl>(2),
                             Start = inst,
                         };
