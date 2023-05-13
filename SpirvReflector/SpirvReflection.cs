@@ -21,10 +21,13 @@ namespace SpirvReflector
         SpirvDef _def;
         Dictionary<SpirvOpCode, SpirvInstructionDef> _defInstructions;
 
+        Dictionary<Type, SpirvParser> _parsers;
+
         public SpirvReflection(IReflectionLogger log)
         {
             _log = log;
             _defInstructions = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
+            _parsers = new Dictionary<Type, SpirvParser>();
 
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
 
@@ -61,6 +64,21 @@ namespace SpirvReflector
             }
         }
 
+        internal SpirvParser GetParser(Type pType)
+        {
+            if (!typeof(SpirvParser).IsAssignableFrom(pType))
+                throw new InvalidOperationException($"The provided parser type must be a derivative of {nameof(SpirvParser)}");
+
+            if(!_parsers.TryGetValue(pType, out SpirvParser parser))
+            {
+                parser = Activator.CreateInstance(pType) as SpirvParser;
+                _parsers.Add(pType, parser);
+            }
+
+            return parser;
+        }
+
+
         /// <summary>
         /// Attempts to open an embedded resource file and returns a <see cref="Stream"/> if successful.
         /// </summary>
@@ -94,7 +112,7 @@ namespace SpirvReflector
             List<SpirvInstruction> instructions = ReadInstructions(stream);
 
             _log.WriteLine("");
-            result.SetInstructions(instructions, _log);
+            result.SetInstructions(this, instructions, _log);
 
             return result;
         }

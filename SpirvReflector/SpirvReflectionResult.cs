@@ -15,28 +15,32 @@ namespace SpirvReflector
             public string Name { get; internal set; }
         }
 
-        SpirvInstruction[] _assignments;
+        internal List<SpirvBytecodeElement> Elements;
+
+        internal SpirvInstruction[] Assignments;
+
+        internal List<SpirvFunction> Functions;
 
         List<SpirvInstruction> _instructions;
-        List<SpirvBytecodeElement> _elements;
-
         List<SpirvCapability> _capabilities;
         List<SpirvSource> _sources;
-        List<SpirvFunction> _functions;
         List<EntryPoint> _entryPoints;
         List<string> _extensions;
+        HashSet<Type> _completedParsers;
 
         internal SpirvReflectionResult(ref SpirvVersion version, uint generator, uint bound, uint schema)
         {
             _instructions = new List<SpirvInstruction>();
-            _elements = new List<SpirvBytecodeElement>();
+            _completedParsers = new HashSet<Type>();
+
+            Elements = new List<SpirvBytecodeElement>();
+            Functions = new List<SpirvFunction>();
+            Assignments = new SpirvInstruction[bound];
 
             _capabilities = new List<SpirvCapability>();
             _sources = new List<SpirvSource>();
             _extensions = new List<string>();
-            _functions = new List<SpirvFunction>();
             _entryPoints = new List<EntryPoint>();
-            _assignments = new SpirvInstruction[bound];
 
             Version = version;
             Generator  = generator;
@@ -44,16 +48,49 @@ namespace SpirvReflector
             InstructionSchema = schema;
         }
 
-        internal void SetInstructions(List<SpirvInstruction> instructions, IReflectionLogger log)
+        internal void AddCapaibility(SpirvCapability cap)
         {
+            _capabilities.Add(cap);
+        }
+
+        internal void AddExtension(string ext)
+        {
+            _extensions.Add(ext);
+        }
+
+        internal void AddSource(SpirvSource source)
+        {
+            _sources.Add(source);
+        }
+
+        internal void RunParser<T>(SpirvReflection reflection)
+            where T : SpirvParser, new()
+        {
+            RunParser(typeof(T), reflection);
+        }
+
+        internal void RunParser(Type pType, SpirvReflection reflection)
+        {
+            if (!_completedParsers.Contains(pType))
+            {
+                SpirvParser parser = reflection.GetParser(pType);
+                parser.Parse(reflection, this);
+                _completedParsers.Add(pType);
+            }
+        }
+
+
+        internal void SetInstructions(SpirvReflection reflection, List<SpirvInstruction> instructions, IReflectionLogger log)
+        {
+            _completedParsers.Clear();
             _instructions.Clear();
             _capabilities.Clear();
             _instructions.AddRange(instructions);
-            _elements.AddRange(_instructions);
+            Elements.AddRange(_instructions);
 
             InstructionCount = instructions.Count;
-            InitialPass();
-            FunctionPass();
+            RunParser<InitialParser>(reflection);
+            RunParser<FunctionParser>(reflection);
 
             string caps = string.Join(", ", _capabilities.Select(c => c.ToString()));
             string exts = string.Join(", ", _extensions);
@@ -64,7 +101,7 @@ namespace SpirvReflector
             log.WriteLine($"Memory Model: {AddressingModel} -- {MemoryModel}");
 
             uint eID = 0;
-            foreach(SpirvBytecodeElement element in _elements)
+            foreach(SpirvBytecodeElement element in Elements)
             {
                 switch (element)
                 {
@@ -92,7 +129,7 @@ namespace SpirvReflector
                             // TODO fetch function parameter definition
                             SpirvFunctionControl funcControl = func.Start.GetOperand<SpirvFunctionControl>();
                             uint defID = func.Start.GetOperand<uint>(3);
-                            SpirvInstruction funcDef = _assignments[defID];
+                            SpirvInstruction funcDef = Assignments[defID];
 
                             log.WriteLine($"E_{eID}:");
                             log.WriteLine($"[FunctionControl.{funcControl}]");
@@ -108,147 +145,6 @@ namespace SpirvReflector
                 eID++;
                 
             }
-        }
-
-        private void Pass(Action<SpirvInstruction> parseCallback)
-        {
-            if (parseCallback == null)
-                throw new ArgumentNullException("parseCallback cannot be null");
-
-            List<SpirvBytecodeElement> elements = new List<SpirvBytecodeElement>(_elements);
-            foreach (SpirvBytecodeElement el in elements)
-            {
-                if (el is not SpirvInstruction inst)
-                    continue;
-
-                parseCallback(inst);
-            }
-        }
-
-        /// <summary>
-        /// Builds initial structure data. 
-        /// 
-        /// <para>Generally, this is pulled from instructions that do not reference any assigned values, as the assignment list has to be built during this pass.</para>
-        /// </summary>
-        private void InitialPass()
-        {
-            Pass((inst) =>
-            {
-                if (inst.Result != null)
-                    _assignments[inst.Result.Value] = inst;
-
-                switch (inst.OpCode)
-                {
-                    case SpirvOpCode.OpCapability:
-                        SpirvWord<SpirvCapability> wCap = inst.Operands[0] as SpirvWord<SpirvCapability>;
-                        _capabilities.Add(wCap.Value);
-                        break;
-
-                    case SpirvOpCode.OpExtension:
-                        SpirvLiteralString wExt = inst.Operands[0] as SpirvLiteralString;
-                        _extensions.Add(wExt.Value);
-                        break;
-
-                    case SpirvOpCode.OpMemoryModel:
-                        AddressingModel = inst.GetOperand<SpirvAddressingModel>();
-                        MemoryModel = inst.GetOperand<SpirvMemoryModel>();
-                        break;
-
-                    case SpirvOpCode.OpSource:
-                        SpirvSource src = new SpirvSource()
-                        {
-                            Language = inst.GetOperand<SpirvSourceLanguage>(),
-                            Version = inst.GetOperand<uint>(1),
-                            Source = inst.GetOperandString(3),
-                        };
-
-                        // Filename is optional.
-                        if (inst.Operands.Count >= 3)
-                        {
-                            uint fnID = inst.GetOperand<uint>(2);
-                            SpirvInstruction fn = _assignments[fnID];
-                            src.Filename = fn.GetOperandString(1);
-                        }
-
-                        _sources.Add(src);
-                        break;
-
-                    // Dump any instructions we don't care about.
-                    case SpirvOpCode.OpLine:
-                    case SpirvOpCode.OpNoLine:
-                    case SpirvOpCode.OpModuleProcessed:
-                        break;
-
-                    /*case SpirvOpCode.OpEntryPoint:
-                        EntryPoint entry = new EntryPoint();
-                        SpirvLiteralString ep = inst.GetOperandWord<SpirvLiteralString>();
-
-                        if (ep != null)
-                        {
-                            entry.ExecutionModel = inst.GetOperand<SpirvExecutionModel>();
-                            entry.Name = ep.Value;
-                            _entryPoints.Add(entry);
-                        }
-                        break;*/
-
-                    default:
-                        return;
-                }
-
-                _elements.Remove(inst);
-            });
-        }
-
-        /// <summary>
-        /// Builds function information.
-        /// </summary>
-        private void FunctionPass()
-        {
-            Stack<SpirvFunction> funcStack = new Stack<SpirvFunction>();
-            SpirvFunction curFunc = null;
-
-            Pass((inst) =>
-            {
-                switch (inst.OpCode)
-                {
-                    case SpirvOpCode.OpFunction:
-                        if (curFunc != null)
-                            funcStack.Push(curFunc);
-
-                        uint returnTypeId = inst.GetOperand<uint>(0);
-                        curFunc = new SpirvFunction()
-                        {
-                            ReturnType = _assignments[returnTypeId],
-                            Control = inst.GetOperand<SpirvFunctionControl>(2),
-                            Start = inst,
-                        };
-                        _functions.Add(curFunc);
-                        _elements.Add(curFunc);
-                        break;
-
-                    case SpirvOpCode.OpFunctionEnd:
-                        if (curFunc != null)
-                        {
-                            curFunc.End = inst;
-
-                            if (funcStack.Count > 0)
-                                curFunc = funcStack.Pop();
-                            else
-                                curFunc = null;
-                        }
-                        break;
-
-                    default:
-                        if (curFunc != null)
-                        {
-                            curFunc.Instructions.Add(inst);
-                            break;
-                        }
-                        return;
-                }
-
-                _elements.Remove(inst);
-            });
         }
 
         /// <summary>
@@ -300,11 +196,11 @@ namespace SpirvReflector
         /// <summary>
         /// Gets the memory addressing model used by the bytecode.
         /// </summary>
-        public SpirvAddressingModel AddressingModel { get; private set; }
+        public SpirvAddressingModel AddressingModel { get; internal set; }
 
         /// <summary>
         /// Gets the memory model used by the bytecode.
         /// </summary>
-        public SpirvMemoryModel MemoryModel { get; private set; }
+        public SpirvMemoryModel MemoryModel { get; internal set; }
     }
 }
