@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 
 namespace SpirvReflector
@@ -17,13 +18,12 @@ namespace SpirvReflector
     /// </remarks>
     public unsafe class SpirvReflection
     {
-        IReflectionLogger _log;
         SpirvDef _def;
         Dictionary<Type, SpirvProcessor> _parsers;
 
         public SpirvReflection(IReflectionLogger log)
         {
-            _log = log;
+            Log = log;
             _parsers = new Dictionary<Type, SpirvProcessor>();
 
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
@@ -57,18 +57,24 @@ namespace SpirvReflector
             }
         }
 
-        internal SpirvProcessor GetParser(Type pType)
+        internal void Run<T>(SpirvReflectContext context)
+                where T : SpirvProcessor, new()
+        {
+            Run(typeof(T), context);
+        }
+
+        internal void Run(Type pType, SpirvReflectContext context)
         {
             if (!typeof(SpirvProcessor).IsAssignableFrom(pType))
                 throw new InvalidOperationException($"The provided parser type must be a derivative of {nameof(SpirvProcessor)}");
 
-            if(!_parsers.TryGetValue(pType, out SpirvProcessor parser))
+            if (!_parsers.TryGetValue(pType, out SpirvProcessor parser))
             {
                 parser = Activator.CreateInstance(pType) as SpirvProcessor;
                 _parsers.Add(pType, parser);
-            }
+            };
 
-            return parser;
+            parser.Process(context);
         }
 
         /// <summary>
@@ -94,31 +100,129 @@ namespace SpirvReflector
 
         public SpirvReflectionResult Reflect(void* byteCode, nuint numBytes)
         {
+            SpirvReflectContext context = new SpirvReflectContext(this);
             SpirvStream stream = new SpirvStream(byteCode, numBytes);
-            SpirvVersion version = (SpirvVersion)stream.ReadWord();
-            uint generator = stream.ReadWord();
-            uint bound = stream.ReadWord();
-            uint schema = stream.ReadWord();
 
-            SpirvReflectionResult result = new SpirvReflectionResult(ref version, generator, bound, schema);
-            List<SpirvInstruction> instructions = ReadInstructions(stream);
+            context.Result.Version = (SpirvVersion)stream.ReadWord();
+            context.Result.Generator = stream.ReadWord();
+            context.Result.Bound = stream.ReadWord();
+            context.Result.InstructionSchema = stream.ReadWord();
+            context.Assignments = new SpirvInstruction[context.Result.Bound];
+            ReadInstructions(stream, context);
+            context.Result.InstructionCount = context.Instructions.Count;
 
-            _log.WriteLine("");
-            result.SetInstructions(this, instructions, _log);
+            context.Elements.AddRange(context.Instructions);
 
-            return result;
+            Run<InitialProcessor>(context);
+            Run<RefResolver>(context);
+            Run<TypeResolver>(context);
+            Run<FunctionResolver>(context);
+
+            LogInstructions(context);
+            LogElements(context);
+
+            return context.Result;
         }
 
-        private List<SpirvInstruction> ReadInstructions(SpirvStream stream)
+        /// <summary>
+        /// Outputs the raw instruction list to <see cref="Log"/>, if available.
+        /// </summary>
+        private void LogInstructions(SpirvReflectContext context)
         {
-            List<SpirvInstruction> instructions = new List<SpirvInstruction>();
+            if (Log == null)
+                return;
 
+            for(int i = 0; i < context.Instructions.Count; i++)
+            {
+                SpirvInstruction inst = context.Instructions[i];
+                string opResult = inst.Result != null ? $"{inst.Result} = " : "";
+                if (inst.Operands.Count > 0)
+                {
+                    string operands = GetOperandString(inst);
+                    Log.WriteLine($"I_{i}: {opResult}{inst.OpCode} -- {operands}");
+                }
+                else
+                {
+                    Log.WriteLine($"I_{i}: {opResult}{inst.OpCode}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Outputs the current list of elements to <see cref="Log"/>, if available.
+        /// </summary>
+        private void LogElements(SpirvReflectContext context)
+        {
+            if (Log == null)
+                return;
+
+            string caps = string.Join(", ", context.Result.Capabilities.Select(c => c.ToString()));
+            string exts = string.Join(", ", context.Result.Extensions);
+
+            Log.WriteLine("Translated:", ConsoleColor.Green);
+            Log.WriteLine($"Capabilities: {caps}");
+            Log.WriteLine($"Extensions: {exts}");
+            Log.WriteLine($"Memory Model: {context.Result.AddressingModel} -- {context.Result.MemoryModel}");
+
+            uint eID = 0;
+            foreach (SpirvBytecodeElement element in context.Elements)
+            {
+                switch (element)
+                {
+                    case SpirvInstruction inst:
+                        {
+                            string opResult = inst.Result != null ? $"{inst.Result} = " : "";
+                            if (inst.Operands.Count > 0)
+                            {
+                                string operands = SpirvReflection.GetOperandString(inst);
+                                Log.WriteLine($"E_{eID}: {opResult}{inst.OpCode} -- {operands}");
+                            }
+                            else
+                            {
+                                Log.WriteLine($"E_{eID}: {opResult}{inst.OpCode}");
+                            }
+                        }
+                        break;
+
+                    case SpirvFunction func:
+                        {
+                            string returnType = "";
+                            if (func.ReturnType != null)
+                                returnType = $"{(func.ReturnType.Name ?? func.ReturnType.Kind.ToString())} ";
+
+                            // TODO fetch function parameter definition
+                            SpirvFunctionControl funcControl = func.Start.GetOperand<SpirvFunctionControl>();
+                            uint defID = func.Start.GetOperand<uint>(3);
+                            SpirvInstruction funcDef = context.Assignments[defID];
+
+                            Log.WriteLine($"E_{eID}:");
+                            Log.WriteLine($"[FunctionControl.{funcControl}]");
+                            Log.WriteLine($"{returnType}Function()");
+                            Log.WriteLine($"{{");
+                            foreach (SpirvInstruction inst in func.Instructions)
+                                Log.WriteLine($"    {inst}");
+                            Log.WriteLine($"}}");
+                        }
+                        break;
+
+                    default:
+                        Log.WriteLine($"E_{eID}: {element}");
+                        break;
+                }
+
+                eID++;
+
+            }
+        }
+
+        private void ReadInstructions(SpirvStream stream, SpirvReflectContext context)
+        {
             uint instID = 0;
-            _log.WriteLine("Raw:", ConsoleColor.Green);
+            Log.WriteLine("Raw:", ConsoleColor.Green);
             while (!stream.IsEndOfStream)
             {
                 SpirvInstruction inst = stream.ReadInstruction();
-                instructions.Add(inst);
+                context.Instructions.Add(inst);
 
                 if (_def.OpcodeLookup.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
                 {
@@ -130,27 +234,14 @@ namespace SpirvReflector
 
                         ReadWord(inst, opDef.Kind, opDef.Name);
                     }
-
-                    string opResult = inst.Result != null ? $"{inst.Result} = " : "";
-                    if (inst.Operands.Count > 0)
-                    {
-                        string operands = GetOperandString(inst);
-                        _log.WriteLine($"I_{instID}: {opResult}{inst.OpCode} -- {operands}");
-                    }
-                    else
-                    {
-                        _log.WriteLine($"I_{instID}: {opResult}{inst.OpCode}");
-                    }
                 }
                 else
                 {
-                    _log.Warning($"I_{instID}: Unknown opcode '{inst.OpCode}' ({(uint)inst.OpCode}).");
+                    Log.Warning($"I_{instID}: Unknown opcode '{inst.OpCode}' ({(uint)inst.OpCode}).");
                 }
 
                 instID++;
             }
-
-            return instructions;
         }
 
         private void ReadWord(SpirvInstruction inst, string kind, string name)
@@ -188,7 +279,7 @@ namespace SpirvReflector
             }
             else
             {
-                _log.Warning($"Unknown word type: {wordTypeName}");
+                Log.Warning($"Unknown word type: {wordTypeName}");
             }
         }
 
@@ -227,7 +318,7 @@ namespace SpirvReflector
                     Type gType = GetWordType(genericName);
                     if (gType == null)
                     {
-                        _log.Warning($"Unknown generic type '{genericName}' for type '{typeName}'");
+                        Log.Warning($"Unknown generic type '{genericName}' for type '{typeName}'");
                         return null;
                     }
 
@@ -250,5 +341,8 @@ namespace SpirvReflector
 
             return t;
         }
+
+
+        internal IReflectionLogger Log { get; }
     }
 }

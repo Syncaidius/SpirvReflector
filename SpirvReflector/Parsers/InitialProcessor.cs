@@ -9,26 +9,26 @@ namespace SpirvReflector
 {
     internal class InitialProcessor : SpirvProcessor
     {
-        protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
+        protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
         {
             if (inst.Result != null)
-                result.Assignments[inst.Result.Value] = inst;
+                context.Assignments[inst.Result.Value] = inst;
 
             switch (inst.OpCode)
             {
                 case SpirvOpCode.OpCapability:
                     SpirvWord<SpirvCapability> wCap = inst.Operands[0] as SpirvWord<SpirvCapability>;
-                    result.AddCapaibility(wCap.Value);
+                    context.Result.AddCapaibility(wCap.Value);
                     break;
 
                 case SpirvOpCode.OpExtension:
                     SpirvLiteralString wExt = inst.Operands[0] as SpirvLiteralString;
-                    result.AddExtension(wExt.Text);
+                    context.Result.AddExtension(wExt.Text);
                     break;
 
                 case SpirvOpCode.OpMemoryModel:
-                    result.AddressingModel = inst.GetOperand<SpirvAddressingModel>();
-                    result.MemoryModel = inst.GetOperand<SpirvMemoryModel>();
+                    context.Result.AddressingModel = inst.GetOperand<SpirvAddressingModel>();
+                    context.Result.MemoryModel = inst.GetOperand<SpirvMemoryModel>();
                     break;
 
                 case SpirvOpCode.OpSource:
@@ -43,11 +43,11 @@ namespace SpirvReflector
                     if (inst.Operands.Count >= 3)
                     {
                         uint fnID = inst.GetOperand<uint>(2);
-                        SpirvInstruction fn = result.Assignments[fnID];
+                        SpirvInstruction fn = context.Assignments[fnID];
                         src.Filename = fn.GetOperandString(1);
                     }
 
-                    result.AddSource(src);
+                    context.Result.AddSource(src);
                     break;
 
                 // Dump any instructions we don't care about.
@@ -72,7 +72,7 @@ namespace SpirvReflector
                     return;
             }
 
-            result.Elements.Remove(inst);
+            context.Elements.Remove(inst);
         }
     }
 }

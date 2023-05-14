@@ -13,22 +13,22 @@ namespace SpirvReflector
         /// Invoked during a 
         /// </summary>
         /// <param name="reflection"></param>
-        /// <param name="result"></param>
-        internal void Process(SpirvReflection reflection, SpirvReflectionResult result)
+        /// <param name="context"></param>
+        internal void Process(SpirvReflectContext context)
         {
-            List<SpirvBytecodeElement> elements = new List<SpirvBytecodeElement>(result.Elements);
+            List<SpirvBytecodeElement> elements = new List<SpirvBytecodeElement>(context.Elements);
             foreach (SpirvBytecodeElement el in elements)
             {
                 if (el is not SpirvInstruction inst)
                     continue;
 
-                OnProcess(reflection, result, inst);
+                OnProcess(context, inst);
             }
 
             OnCompleted();
         }
 
-        protected abstract void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst);
+        protected abstract void OnProcess(SpirvReflectContext context, SpirvInstruction inst);
 
         protected virtual void OnCompleted() { }
     }

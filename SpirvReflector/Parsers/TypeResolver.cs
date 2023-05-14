@@ -9,12 +9,12 @@ namespace SpirvReflector
 {
     internal class TypeResolver : SpirvProcessor
     {
-        protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
+        protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
         {
             if (inst.Result == null)
                 return;
 
-            if (!result.OpTypes.TryGetValue(inst.Result.Value, out SpirvType t))
+            if (!context.OpTypes.TryGetValue(inst.Result.Value, out SpirvType t))
             {
                 t = new SpirvType();
 
@@ -53,10 +53,10 @@ namespace SpirvReflector
                         return;
                 }
 
-                result.OpTypes.Add(inst.Result.Value, t);
+                context.OpTypes.Add(inst.Result.Value, t);
             }
 
-            result.ReplaceElement(inst, t);
+            context.ReplaceElement(inst, t);
         }
     }
 }

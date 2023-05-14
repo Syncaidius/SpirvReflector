@@ -12,7 +12,7 @@ namespace SpirvReflector
     /// </summary>
     internal class RefResolver : SpirvProcessor
     {
-        protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
+        protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
         {
             foreach(SpirvWord operand in inst.Operands)
             {
@@ -20,7 +20,7 @@ namespace SpirvReflector
                     continue;
 
                 if (operand is SpirvIdRef idRef)
-                    idRef.Ref = result.Assignments[idRef.Value];
+                    idRef.Ref = context.Assignments[idRef.Value];
             }
         }
     }

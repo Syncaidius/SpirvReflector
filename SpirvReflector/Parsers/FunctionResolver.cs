@@ -12,7 +12,7 @@ namespace SpirvReflector
         Stack<SpirvFunction> _funcStack = new Stack<SpirvFunction>();
         SpirvFunction _curFunc;
 
-        protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
+        protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
         {
             switch (inst.OpCode)
             {
@@ -27,11 +27,11 @@ namespace SpirvReflector
                     };
 
                     uint returnTypeId = inst.GetOperand<uint>(0);
-                    if (result.OpTypes.TryGetValue(returnTypeId, out SpirvType returnType))
+                    if (context.OpTypes.TryGetValue(returnTypeId, out SpirvType returnType))
                         _curFunc.ReturnType = returnType;
 
-                    result.Functions.Add(_curFunc);
-                    result.ReplaceElement(inst, _curFunc);
+                    context.Functions.Add(_curFunc);
+                    context.ReplaceElement(inst, _curFunc);
                     return;
 
                 case SpirvOpCode.OpFunctionEnd:
@@ -55,7 +55,7 @@ namespace SpirvReflector
                     return;
             }
 
-            result.Elements.Remove(inst);
+            context.Elements.Remove(inst);
         }
 
         protected override void OnCompleted()

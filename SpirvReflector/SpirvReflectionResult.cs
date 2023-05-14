@@ -16,38 +16,19 @@ namespace SpirvReflector
             public string Name { get; internal set; }
         }
 
-        internal List<SpirvBytecodeElement> Elements;
-
-        internal SpirvInstruction[] Assignments;
-        internal Dictionary<uint, SpirvType> OpTypes;
-
-        internal List<SpirvFunction> Functions;
-
-        List<SpirvInstruction> _instructions;
         List<SpirvCapability> _capabilities;
         List<SpirvSource> _sources;
         List<EntryPoint> _entryPoints;
         List<string> _extensions;
 
-        internal SpirvReflectionResult(ref SpirvVersion version, uint generator, uint bound, uint schema)
+        uint _bound;
+
+        internal SpirvReflectionResult()
         {
-            _instructions = new List<SpirvInstruction>();
-
-            Elements = new List<SpirvBytecodeElement>();
-            Functions = new List<SpirvFunction>();
-
-            Assignments = new SpirvInstruction[bound];
-            OpTypes = new Dictionary<uint, SpirvType>();
-
             _capabilities = new List<SpirvCapability>();
             _sources = new List<SpirvSource>();
             _extensions = new List<string>();
             _entryPoints = new List<EntryPoint>();
-
-            Version = version;
-            Generator  = generator;
-            Bound = bound;
-            InstructionSchema = schema;
         }
 
         internal void AddCapaibility(SpirvCapability cap)
@@ -65,117 +46,36 @@ namespace SpirvReflector
             _sources.Add(source);
         }
 
-        internal void Run<T>(SpirvReflection reflection)
-            where T : SpirvProcessor, new()
-        {
-            RunParser(typeof(T), reflection);
-        }
-
-        internal void RunParser(Type pType, SpirvReflection reflection)
-        {
-            SpirvProcessor parser = reflection.GetParser(pType);
-            parser.Process(reflection, this);
-        }
-
-        internal void ReplaceElement(SpirvBytecodeElement element, SpirvBytecodeElement replacement)
-        {
-            int index = Elements.IndexOf(element);
-            if (index > -1)
-                Elements[index] = replacement;
-        }
-
-        internal void SetInstructions(SpirvReflection reflection, List<SpirvInstruction> instructions, IReflectionLogger log)
-        {
-            _instructions.Clear();
-            _capabilities.Clear();
-            _instructions.AddRange(instructions);
-            Elements.AddRange(_instructions);
-
-            InstructionCount = instructions.Count;
-            Run<InitialProcessor>(reflection);
-            Run<RefResolver>(reflection);
-            Run<TypeResolver>(reflection);
-            Run<FunctionResolver>(reflection);
-
-            string caps = string.Join(", ", _capabilities.Select(c => c.ToString()));
-            string exts = string.Join(", ", _extensions);
-
-            log.WriteLine("Translated:", ConsoleColor.Green);
-            log.WriteLine($"Capabilities: {caps}");
-            log.WriteLine($"Extensions: {exts}");
-            log.WriteLine($"Memory Model: {AddressingModel} -- {MemoryModel}");
-
-            uint eID = 0;
-            foreach(SpirvBytecodeElement element in Elements)
-            {
-                switch (element)
-                {
-                    case SpirvInstruction inst:
-                        {
-                            string opResult = inst.Result != null ? $"{inst.Result} = " : "";
-                            if (inst.Operands.Count > 0)
-                            {
-                                string operands = SpirvReflection.GetOperandString(inst);
-                                log.WriteLine($"E_{eID}: {opResult}{inst.OpCode} -- {operands}");
-                            }
-                            else
-                            {
-                                log.WriteLine($"E_{eID}: {opResult}{inst.OpCode}");
-                            }
-                        }
-                        break;
-
-                    case SpirvFunction func:
-                        {
-                            string returnType = "";
-                            if (func.ReturnType != null)
-                                returnType = $"{(func.ReturnType.Name ?? func.ReturnType.Kind.ToString())} ";
-
-                            // TODO fetch function parameter definition
-                            SpirvFunctionControl funcControl = func.Start.GetOperand<SpirvFunctionControl>();
-                            uint defID = func.Start.GetOperand<uint>(3);
-                            SpirvInstruction funcDef = Assignments[defID];
-
-                            log.WriteLine($"E_{eID}:");
-                            log.WriteLine($"[FunctionControl.{funcControl}]");
-                            log.WriteLine($"{returnType}Function()");
-                            log.WriteLine($"{{");
-                            foreach (SpirvInstruction inst in func.Instructions)
-                                log.WriteLine($"    {inst}");
-                            log.WriteLine($"}}");
-                        }
-                        break;
-
-                    default:
-                        log.WriteLine($"E_{eID}: {element}");
-                        break;
-                }
-
-                eID++;
-                
-            }
-        }
-
         /// <summary>
         /// Gets the SPIR-V version used by the reflected bytecode.
         /// </summary>
-        public SpirvVersion Version { get; }
+        public SpirvVersion Version { get; internal set; }
 
         /// <summary>
         /// The original generator's magic number.
         /// </summary>
-        public uint Generator { get; }
+        public uint Generator { get; internal set; }
 
         /// <summary>
         /// Gets the Bound value; where all [id]s in this module are guaranteed to satisfy.
         /// <para>Bound should be small, smaller is better, with all [id] in a module being densely packed and near 0.</para>
         /// </summary>
-        public uint Bound { get; }
+        public uint Bound { get; internal set; }
 
         /// <summary>
         /// Gets the instruction schema number. This is still reserved if unused.
         /// </summary>
-        public uint InstructionSchema { get; }
+        public uint InstructionSchema { get; internal set; }
+
+        /// <summary>
+        /// Gets the memory addressing model used by the bytecode.
+        /// </summary>
+        public SpirvAddressingModel AddressingModel { get; internal set; }
+
+        /// <summary>
+        /// Gets the memory model used by the bytecode.
+        /// </summary>
+        public SpirvMemoryModel MemoryModel { get; internal set; }
 
         /// <summary>
         /// Gets a read-only list of capabilities required to execute the bytecode.
@@ -200,16 +100,6 @@ namespace SpirvReflector
         /// <summary>
         /// Gets the total number of instructions in the bytecode.
         /// </summary>
-        public int InstructionCount { get; private set; }
-
-        /// <summary>
-        /// Gets the memory addressing model used by the bytecode.
-        /// </summary>
-        public SpirvAddressingModel AddressingModel { get; internal set; }
-
-        /// <summary>
-        /// Gets the memory model used by the bytecode.
-        /// </summary>
-        public SpirvMemoryModel MemoryModel { get; internal set; }
+        public int InstructionCount { get; internal set; }
     }
 }
