@@ -132,10 +132,11 @@ namespace SpirvReflector
             if (Log == null)
                 return;
 
-            for(int i = 0; i < context.Instructions.Count; i++)
+            Log.WriteLine("Instructions:", ConsoleColor.Green);
+            for (int i = 0; i < context.Instructions.Count; i++)
             {
                 SpirvInstruction inst = context.Instructions[i];
-                Log.WriteLine($"I_{i}: {inst}");
+                Log.WriteLabeled($"{i}", inst.ToString());
             }
         }
 
@@ -150,19 +151,18 @@ namespace SpirvReflector
             string caps = string.Join(", ", context.Result.Capabilities.Select(c => c.ToString()));
             string exts = string.Join(", ", context.Result.Extensions);
 
-            Log.WriteLine("\nTranslated:", ConsoleColor.Green);
-            Log.WriteLine($"Capabilities: {caps}");
-            Log.WriteLine($"Extensions: {exts}");
-            Log.WriteLine($"Memory Model: {context.Result.AddressingModel} -- {context.Result.MemoryModel}");
+            Log.WriteLine("\nProcessed:", ConsoleColor.Green);
+            Log.WriteLabeled("Capabilities", $"{caps}");
+            Log.WriteLabeled("Extensions", $"{exts}");
+            Log.WriteLabeled("Memory Model", $"{context.Result.AddressingModel} -- {context.Result.MemoryModel}");
 
-            for(int i = 0; i < context.Elements.Count; i++)
-                Log.WriteLine($"E_{i}: {context.Elements[i]}");
+            for (int i = 0; i < context.Elements.Count; i++)
+                Log.WriteLabeled($"{i}", context.Elements[i].ToString());
         }
 
         private void ReadInstructions(SpirvStream stream, SpirvReflectContext context)
         {
             uint instID = 0;
-            Log.WriteLine("Raw:", ConsoleColor.Green);
             while (!stream.IsEndOfStream)
             {
                 SpirvInstruction inst = stream.ReadInstruction();

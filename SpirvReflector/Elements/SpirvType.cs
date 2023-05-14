@@ -9,6 +9,13 @@ namespace SpirvReflector
 {
     public class SpirvType : SpirvBytecodeElement
     {
+        List<SpirvTypeMember> _members = new List<SpirvTypeMember>();
+
+        internal void AddMember(SpirvTypeMember member)
+        {
+            _members.Add(member);
+        }
+
         public override string ToString()
         {
             string name = string.IsNullOrWhiteSpace(Name) ? "" : $"({Name})";
@@ -30,6 +37,11 @@ namespace SpirvReflector
         /// <para>The minimium dimension size is 1.</para>
         /// </summary>
         public uint[] Dimensions { get; internal set; }
+
+        /// <summary>
+        /// Gets a read-only list of the members that are part of the current type.
+        /// </summary>
+        public IReadOnlyList<SpirvTypeMember> Members => _members;
     }
 
     public class SpirvTypeMember
@@ -52,10 +64,9 @@ namespace SpirvReflector
         public string Name { get; internal set; }
 
         /// <summary>
-        /// Gets t type of value stored by the member.
+        /// Gets the <see cref="SpirvType"/> of value stored by the member.
         /// </summary>
         public SpirvType Type { get; internal set; }
-
     }
 
     public enum SpirvTypeKind
