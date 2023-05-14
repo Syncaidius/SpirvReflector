@@ -19,7 +19,6 @@ namespace SpirvReflector
     {
         IReflectionLogger _log;
         SpirvDef _def;
-
         Dictionary<Type, SpirvProcessor> _parsers;
 
         public SpirvReflection(IReflectionLogger log)
@@ -182,15 +181,10 @@ namespace SpirvReflector
                 else if (isEnum)
                 {
                     object enumValue = word.GetValue();
-                    if (enumValue.ToString() == "Offset")
-                    {
-
-                    }
                     SpirvEnumerantDef d = _def.GetEnumDef(enumValue.GetType(), enumValue);
                     foreach (SpirvParameterDef pd in d.Parameters)
                         ReadWord(inst, pd.Kind, pd.Name);
                 }
-
             }
             else
             {
