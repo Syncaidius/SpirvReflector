@@ -185,7 +185,15 @@ namespace SpirvReflector
                         if ((opDef.Quantifier == "?" || opDef.Quantifier == "*") && inst.UnreadWordCount == 0)
                             continue;
 
-                        ReadWord(inst, opDef.Kind, opDef.Name);
+                        if (opDef.Quantifier == "*")
+                        {
+                            while (inst.UnreadWordCount > 0)
+                                ReadWord(inst, opDef.Kind, opDef.Name);
+                        }
+                        else
+                        {
+                            ReadWord(inst, opDef.Kind, opDef.Name);
+                        }
                     }
                 }
                 else
