@@ -29,5 +29,43 @@ namespace SpirvReflector
 
         [JsonProperty("operand_kinds")]
         public SpirvOperandKindDef[] OperandKinds { get; set; } = new SpirvOperandKindDef[0];
+
+        internal Dictionary<string, SpirvOperandKindDef> OperandKindLookup { get; } = new Dictionary<string, SpirvOperandKindDef>();
+
+
+        internal Dictionary<SpirvOpCode, SpirvInstructionDef> OpcodeLookup { get; } = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
+
+        internal void BuildLookups()
+        {
+            // Build operand-kind lookup
+            foreach (SpirvOperandKindDef okd in OperandKinds)
+            {
+                okd.BuildLookups();
+                OperandKindLookup.Add(okd.Kind, okd);
+            }
+
+            // Build opcode lookup
+            foreach (SpirvInstructionDef inst in Instructions)
+            {
+                if (!OpcodeLookup.TryAdd((SpirvOpCode)inst.Opcode, inst))
+                    Console.WriteLine($"Skipping duplicate opcode definition: {inst.OpName} ({inst.Opcode})");
+            }
+        }
+
+        public SpirvEnumerantDef GetEnumDef(Type enumType, object value)
+        {
+            if(!enumType.IsEnum)
+                throw new ArgumentException("Type must be an enum.", "enumType");
+
+            string tName = enumType.Name.Replace("Spirv","");
+            if(OperandKindLookup.TryGetValue(tName, out SpirvOperandKindDef okd))
+            {
+                string vName = value.ToString();
+                if (okd.EnumerantLookup.TryGetValue(vName, out SpirvEnumerantDef ed))
+                    return ed;
+            }
+
+            return null;
+        }
     }
 }

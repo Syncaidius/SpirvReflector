@@ -7,11 +7,11 @@ namespace SpirvReflector
 {
     public class SpirvLiteralString : SpirvWord
     {
-        public string Value;
+        public string Text { get; private set; }
 
         public override unsafe void Read(SpirvInstruction instruction)
         {
-            Value = "";
+            Text = "";
 
             while (instruction.UnreadWordCount > 0)
             {
@@ -23,19 +23,24 @@ namespace SpirvReflector
 
                 if (nullIndex > -1)
                 {
-                    Value += result.Substring(0, nullIndex);
+                    Text += result.Substring(0, nullIndex);
                     break;
                 }
                 else
                 {
-                    Value += result;
+                    Text += result;
                 }
             }
         }
 
+        public override object GetValue()
+        {
+            return Text;
+        }
+
         public override string ToString()
         {
-            return $"'{Value}'";
+            return $"'{Text}'";
         }
     }
 }

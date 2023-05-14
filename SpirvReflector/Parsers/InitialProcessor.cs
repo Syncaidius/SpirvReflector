@@ -23,7 +23,7 @@ namespace SpirvReflector
 
                 case SpirvOpCode.OpExtension:
                     SpirvLiteralString wExt = inst.Operands[0] as SpirvLiteralString;
-                    result.AddExtension(wExt.Value);
+                    result.AddExtension(wExt.Text);
                     break;
 
                 case SpirvOpCode.OpMemoryModel:

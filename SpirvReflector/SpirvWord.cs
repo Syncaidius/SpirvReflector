@@ -13,6 +13,8 @@ namespace SpirvReflector
             instruction.ReadWord();
         }
 
+        public abstract object GetValue();
+
         public string Name { get; internal set; }
     }
 
@@ -35,6 +37,11 @@ namespace SpirvReflector
         public override unsafe void Read(SpirvInstruction instruction)
         {
             Value = instruction.ReadValue<T>();
+        }
+
+        public override object GetValue()
+        {
+            return Value;
         }
 
         public override string ToString()

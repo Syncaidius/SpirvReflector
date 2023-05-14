@@ -19,5 +19,10 @@ namespace SpirvReflector.Literals
             First.Read(instruction);
             Second.Read(instruction);
         }
+
+        public override object GetValue()
+        {
+            return null;
+        }
     }
 }

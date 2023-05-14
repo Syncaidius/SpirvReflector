@@ -19,14 +19,12 @@ namespace SpirvReflector
     {
         IReflectionLogger _log;
         SpirvDef _def;
-        Dictionary<SpirvOpCode, SpirvInstructionDef> _defInstructions;
 
         Dictionary<Type, SpirvProcessor> _parsers;
 
         public SpirvReflection(IReflectionLogger log)
         {
             _log = log;
-            _defInstructions = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
             _parsers = new Dictionary<Type, SpirvProcessor>();
 
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
@@ -46,11 +44,7 @@ namespace SpirvReflector
                     try
                     {
                         _def = JsonConvert.DeserializeObject<SpirvDef>(json);
-                        foreach (SpirvInstructionDef inst in _def.Instructions)
-                        {
-                            if (!_defInstructions.TryAdd((SpirvOpCode)inst.Opcode, inst))
-                                Console.WriteLine($"Skipping duplicate opcode definition: {inst.OpName} ({inst.Opcode})");
-                        }
+                        _def.BuildLookups();
                     }
                     catch (Exception ex)
                     {
@@ -127,7 +121,7 @@ namespace SpirvReflector
                 SpirvInstruction inst = stream.ReadInstruction();
                 instructions.Add(inst);
 
-                if (_defInstructions.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
+                if (_def.OpcodeLookup.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
                 {
                     foreach (SpirvOperandDef opDef in def.Operands)
                     {
@@ -135,30 +129,7 @@ namespace SpirvReflector
                         if ((opDef.Quantifier == "?" || opDef.Quantifier == "*") && inst.UnreadWordCount == 0)
                             continue;
 
-                        // Check if the type is an enum.
-                        string wordTypeName = $"Spirv{opDef.Kind}";
-                        Type t = GetWordType(wordTypeName);
-                        if (t.IsEnum)
-                        {
-                            Type tGeneric = GetWordType("SpirvWord`1");
-                            t = tGeneric.MakeGenericType(t);
-                        }
-
-                        if (t != null)
-                        {
-                            SpirvWord word = Activator.CreateInstance(t) as SpirvWord;
-                            word.Name = opDef.Name;
-
-                            if (word is SpirvIdResult resultID)
-                                inst.Result = resultID;
-
-                            inst.Operands.Add(word);
-                            word.Read(inst);
-                        }
-                        else
-                        {
-                            _log.Warning($"Unknown word type: {wordTypeName}");
-                        }
+                        ReadWord(inst, opDef.Kind, opDef.Name);
                     }
 
                     string opResult = inst.Result != null ? $"{inst.Result} = " : "";
@@ -181,6 +152,50 @@ namespace SpirvReflector
             }
 
             return instructions;
+        }
+
+        private void ReadWord(SpirvInstruction inst, string kind, string name)
+        {
+            // Check if the type is an enum.
+            string wordTypeName = $"Spirv{kind}";
+            Type t = GetWordType(wordTypeName);
+            bool isEnum = t.IsEnum;
+
+            // Check if we need to convert the word type to SpirvWord<T> to accomodate an enum value.
+            if (isEnum)
+            {
+                Type tGeneric = GetWordType("SpirvWord`1");
+                t = tGeneric.MakeGenericType(t);
+            }
+
+            if (t != null)
+            {
+                SpirvWord word = Activator.CreateInstance(t) as SpirvWord;
+                inst.Operands.Add(word);
+                word.Name = name;
+                word.Read(inst);
+
+                if (word is SpirvIdResult resultID)
+                {
+                    inst.Result = resultID;
+                }
+                else if (isEnum)
+                {
+                    object enumValue = word.GetValue();
+                    if (enumValue.ToString() == "Offset")
+                    {
+
+                    }
+                    SpirvEnumerantDef d = _def.GetEnumDef(enumValue.GetType(), enumValue);
+                    foreach (SpirvParameterDef pd in d.Parameters)
+                        ReadWord(inst, pd.Kind, pd.Name);
+                }
+
+            }
+            else
+            {
+                _log.Warning($"Unknown word type: {wordTypeName}");
+            }
         }
 
         internal static string GetOperandString(SpirvInstruction instruction)

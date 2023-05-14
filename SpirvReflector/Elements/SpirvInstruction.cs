@@ -59,7 +59,7 @@ namespace SpirvReflector
                 return null;
 
             SpirvLiteralString str = Operands[index] as SpirvLiteralString;
-            return str?.Value;
+            return str?.Text;
         }
 
         public uint ReadWord()
