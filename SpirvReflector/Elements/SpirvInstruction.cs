@@ -36,6 +36,9 @@ namespace SpirvReflector
         public T GetOperand<T>(int index)
             where T : SpirvWord
         {
+            if (index >= Operands.Count)
+                return null;
+
             SpirvWord word = Operands[index];
 
             if (word is T wt)

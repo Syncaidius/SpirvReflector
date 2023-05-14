@@ -17,7 +17,7 @@ namespace SpirvReflector
 
             // TODO fetch function parameter definition
             SpirvFunctionControl funcControl = Start.GetOperandValue<SpirvFunctionControl>();
-            SpirvIdRef defID = Start.GetOperand<SpirvIdRef>(3);
+            SpirvIdRef defID = Start.GetOperand<SpirvIdRef>(3); // ref to OpTypeFunction 
 
             string result = $"[FunctionControl.{funcControl}]";
             result += $"\n{returnType}Function()";
@@ -42,6 +42,6 @@ namespace SpirvReflector
 
         public int InstructionCount => Instructions.Count;
 
-        public List<SpirvWord> Parameters { get; } = new List<SpirvWord>();
+        public List<SpirvInstruction> Parameters { get; } = new List<SpirvInstruction>();
     }
 }
