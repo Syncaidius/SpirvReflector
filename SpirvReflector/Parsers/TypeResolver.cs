@@ -9,14 +9,6 @@ namespace SpirvReflector
 {
     internal class TypeResolver : SpirvProcessor
     {
-        Stack<SpirvFunction> _funcStack = new Stack<SpirvFunction>();
-        SpirvFunction _curFunc;
-
-        public TypeResolver()
-        {
-            AddPrerequisite<InitialProcessor>();
-        }
-
         protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
         {
             if (inst.Result == null)
@@ -65,13 +57,6 @@ namespace SpirvReflector
             }
 
             result.ReplaceElement(inst, t);
-        }
-
-        protected override void OnCompleted()
-        {
-            base.OnCompleted();
-            _funcStack.Clear();
-            _curFunc = null;
         }
     }
 }

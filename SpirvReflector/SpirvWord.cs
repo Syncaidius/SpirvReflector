@@ -34,7 +34,7 @@ namespace SpirvReflector
 
         public override unsafe void Read(SpirvInstruction instruction)
         {
-            Value = instruction.ReadWord<T>();
+            Value = instruction.ReadValue<T>();
         }
 
         public override string ToString()

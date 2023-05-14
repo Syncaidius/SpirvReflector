@@ -12,12 +12,6 @@ namespace SpirvReflector
         Stack<SpirvFunction> _funcStack = new Stack<SpirvFunction>();
         SpirvFunction _curFunc;
 
-        public FunctionResolver()
-        {
-            AddPrerequisite<InitialProcessor>();
-            AddPrerequisite<TypeResolver>();
-        }
-
         protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
         {
             switch (inst.OpCode)

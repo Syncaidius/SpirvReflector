@@ -28,12 +28,10 @@ namespace SpirvReflector
         List<SpirvSource> _sources;
         List<EntryPoint> _entryPoints;
         List<string> _extensions;
-        HashSet<Type> _completedParsers;
 
         internal SpirvReflectionResult(ref SpirvVersion version, uint generator, uint bound, uint schema)
         {
             _instructions = new List<SpirvInstruction>();
-            _completedParsers = new HashSet<Type>();
 
             Elements = new List<SpirvBytecodeElement>();
             Functions = new List<SpirvFunction>();
@@ -75,12 +73,8 @@ namespace SpirvReflector
 
         internal void RunParser(Type pType, SpirvReflection reflection)
         {
-            if (!_completedParsers.Contains(pType))
-            {
-                SpirvProcessor parser = reflection.GetParser(pType);
-                parser.Process(reflection, this);
-                _completedParsers.Add(pType);
-            }
+            SpirvProcessor parser = reflection.GetParser(pType);
+            parser.Process(reflection, this);
         }
 
         internal void ReplaceElement(SpirvBytecodeElement element, SpirvBytecodeElement replacement)
@@ -92,7 +86,6 @@ namespace SpirvReflector
 
         internal void SetInstructions(SpirvReflection reflection, List<SpirvInstruction> instructions, IReflectionLogger log)
         {
-            _completedParsers.Clear();
             _instructions.Clear();
             _capabilities.Clear();
             _instructions.AddRange(instructions);
@@ -101,6 +94,7 @@ namespace SpirvReflector
             InstructionCount = instructions.Count;
             Run<InitialProcessor>(reflection);
             Run<RefResolver>(reflection);
+            Run<TypeResolver>(reflection);
             Run<FunctionResolver>(reflection);
 
             string caps = string.Join(", ", _capabilities.Select(c => c.ToString()));

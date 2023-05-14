@@ -67,7 +67,7 @@ namespace SpirvReflector
             return _ptr[_readIndex++];
         }
 
-        public T ReadWord<T>() 
+        public T ReadValue<T>() 
             where T : unmanaged
         {
             return *(T*)ReadWordPtr();
@@ -78,18 +78,6 @@ namespace SpirvReflector
             uint* ptr = _ptr + _readIndex;
             _readIndex++;
             return ptr;
-        }
-
-        /// <summary>
-        /// Reads the specified number of words from the current <see cref="SpirvStream"/> and advances the stream position by the same amount.
-        /// </summary>
-        /// <param name="count">The number of words to read from the stream.</param>
-        /// <returns></returns>
-        public uint* ReadWords(uint count)
-        {
-            uint* ptrStart = _ptr + _readIndex;
-            _readIndex += count;
-            return ptrStart;
         }
 
         public override string ToString()
@@ -115,7 +103,5 @@ namespace SpirvReflector
         public SpirvIdResult Result { get; set; }
 
         public uint UnreadWordCount => WordCount - _readIndex;
-
-        public uint* Ptr => _ptr;
     }
 }
