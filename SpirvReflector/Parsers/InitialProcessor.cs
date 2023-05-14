@@ -7,9 +7,9 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
-    internal class InitialParser : SpirvParser
+    internal class InitialProcessor : SpirvProcessor
     {
-        protected override void OnParse(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
+        protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
         {
             if (inst.Result != null)
                 result.Assignments[inst.Result.Value] = inst;

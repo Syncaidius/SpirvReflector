@@ -7,18 +7,18 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
-    internal class FunctionParser : SpirvParser
+    internal class FunctionResolver : SpirvProcessor
     {
         Stack<SpirvFunction> _funcStack = new Stack<SpirvFunction>();
         SpirvFunction _curFunc;
 
-        public FunctionParser()
+        public FunctionResolver()
         {
-            AddPrerequisite<InitialParser>();
-            AddPrerequisite<TypeParser>();
+            AddPrerequisite<InitialProcessor>();
+            AddPrerequisite<TypeResolver>();
         }
 
-        protected override void OnParse(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
+        protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
         {
             switch (inst.OpCode)
             {

@@ -26,14 +26,36 @@ namespace SpirvReflector
         public string Name { get; internal set; }
 
         /// <summary>
-        /// Gets the translated <see cref="Type"/> of the SPIR-V type.
-        /// </summary>
-        public Type ElementType { get; internal set; }
-
-        /// <summary>
-        /// Gets the dimensions of the type. Each element in the array represents the size of a dimension.
+        /// Gets the dimensions of the type. Each element in the array represents the size of a dimension. 
+        /// <para>The minimium dimension size is 1.</para>
         /// </summary>
         public uint[] Dimensions { get; internal set; }
+    }
+
+    public class SpirvTypeMember
+    {
+        internal SpirvTypeMember() { }
+
+        /// <summary>
+        /// Gets the byte offset of the member from the start of its parent structure.
+        /// </summary>
+        public uint ByteOffset { get; internal set; }
+
+        /// <summary>
+        /// Gets the number of bytes occupied by the member.
+        /// </summary>
+        public uint NumBytes { get; internal set; }
+
+        /// <summary>
+        /// Gets the name of the member.
+        /// </summary>
+        public string Name { get; internal set; }
+
+        /// <summary>
+        /// Gets t type of value stored by the member.
+        /// </summary>
+        public SpirvType Type { get; internal set; }
+
     }
 
     public enum SpirvTypeKind

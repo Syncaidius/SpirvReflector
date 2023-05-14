@@ -67,8 +67,8 @@ namespace SpirvReflector
             _sources.Add(source);
         }
 
-        internal void RunParser<T>(SpirvReflection reflection)
-            where T : SpirvParser, new()
+        internal void Run<T>(SpirvReflection reflection)
+            where T : SpirvProcessor, new()
         {
             RunParser(typeof(T), reflection);
         }
@@ -77,8 +77,8 @@ namespace SpirvReflector
         {
             if (!_completedParsers.Contains(pType))
             {
-                SpirvParser parser = reflection.GetParser(pType);
-                parser.Parse(reflection, this);
+                SpirvProcessor parser = reflection.GetParser(pType);
+                parser.Process(reflection, this);
                 _completedParsers.Add(pType);
             }
         }
@@ -99,8 +99,9 @@ namespace SpirvReflector
             Elements.AddRange(_instructions);
 
             InstructionCount = instructions.Count;
-            RunParser<InitialParser>(reflection);
-            RunParser<FunctionParser>(reflection);
+            Run<InitialProcessor>(reflection);
+            Run<RefResolver>(reflection);
+            Run<FunctionResolver>(reflection);
 
             string caps = string.Join(", ", _capabilities.Select(c => c.ToString()));
             string exts = string.Join(", ", _extensions);

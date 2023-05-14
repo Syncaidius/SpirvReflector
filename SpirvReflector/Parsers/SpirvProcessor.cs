@@ -7,12 +7,12 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
-    internal abstract class SpirvParser
+    internal abstract class SpirvProcessor
     {
         List<Type> _prerequisites = new List<Type>();
 
         protected void AddPrerequisite<T>()
-            where T : SpirvParser
+            where T : SpirvProcessor
         {
             _prerequisites.Add(typeof(T));
         }
@@ -22,7 +22,7 @@ namespace SpirvReflector
         /// </summary>
         /// <param name="reflection"></param>
         /// <param name="result"></param>
-        internal void Parse(SpirvReflection reflection, SpirvReflectionResult result)
+        internal void Process(SpirvReflection reflection, SpirvReflectionResult result)
         {
             foreach(Type pType in _prerequisites)
                 result.RunParser(pType, reflection);
@@ -33,13 +33,13 @@ namespace SpirvReflector
                 if (el is not SpirvInstruction inst)
                     continue;
 
-                OnParse(reflection, result, inst);
+                OnProcess(reflection, result, inst);
             }
 
             OnCompleted();
         }
 
-        protected abstract void OnParse(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst);
+        protected abstract void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst);
 
         protected virtual void OnCompleted() { }
     }

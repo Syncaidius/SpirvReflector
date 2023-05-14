@@ -7,17 +7,17 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
-    internal class TypeParser : SpirvParser
+    internal class TypeResolver : SpirvProcessor
     {
         Stack<SpirvFunction> _funcStack = new Stack<SpirvFunction>();
         SpirvFunction _curFunc;
 
-        public TypeParser()
+        public TypeResolver()
         {
-            AddPrerequisite<InitialParser>();
+            AddPrerequisite<InitialProcessor>();
         }
 
-        protected override void OnParse(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
+        protected override void OnProcess(SpirvReflection reflection, SpirvReflectionResult result, SpirvInstruction inst)
         {
             if (inst.Result == null)
                 return;
@@ -38,17 +38,14 @@ namespace SpirvReflector
 
                     case SpirvOpCode.OpTypeBool:
                         t.Kind = SpirvTypeKind.Bool;
-                        t.ElementType = typeof(bool);
                         break;
 
                     case SpirvOpCode.OpTypeFloat:
                         t.Kind = SpirvTypeKind.Float;
-                        t.ElementType = typeof(float); // TODO check bit-size and decide on half, float or double (16, 32 or 64-bit).
                         break;
 
                     case SpirvOpCode.OpTypeInt:
                         t.Kind = SpirvTypeKind.Int;
-                        t.ElementType = typeof(int); // TODO check bit-size and decide on short, int or long (16, 32 or 64-bit).
                         break;
 
                     case SpirvOpCode.OpTypeMatrix:
@@ -58,7 +55,6 @@ namespace SpirvReflector
 
                     case SpirvOpCode.OpTypeVoid:
                         t.Kind = SpirvTypeKind.Void;
-                        t.ElementType = typeof(void);
                         break;
 
                     default:
