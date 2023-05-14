@@ -11,14 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="test.spirv" />
     <None Remove="test_sprite_mfx.spirv" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="test.spirv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="test_sprite_mfx.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

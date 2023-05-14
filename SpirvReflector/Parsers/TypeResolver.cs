@@ -72,6 +72,18 @@ namespace SpirvReflector
                         t.Kind = SpirvTypeKind.Void;
                         break;
 
+                    case SpirvOpCode.OpTypeStruct:
+                        t.Kind = SpirvTypeKind.Struct;
+                        for (int i = 1; i < inst.Operands.Count; i++)
+                        {
+                            uint memberTypeID = inst.GetOperandValue<uint>(i);
+                            t.AddMember(new SpirvTypeMember()
+                            {
+                                Type = ResolveType(memberTypeID, context),
+                            });
+                        }
+                        break;
+
                     default:
                         return t;
                 }

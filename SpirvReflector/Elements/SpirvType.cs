@@ -14,12 +14,26 @@ namespace SpirvReflector
         internal void AddMember(SpirvTypeMember member)
         {
             _members.Add(member);
+            NumBytes += member.Type.NumBytes;
         }
 
         public override string ToString()
         {
-            string elType = ElementType == null ? "" : $" -- Element: [{ElementType}]";
-            return $"Type({ID}) - {Kind} -- Length: {Length} -- Bytes: {NumBytes}{elType}";
+            if (Kind == SpirvTypeKind.Struct)
+            {
+                string result = $"Struct -- Bytes: {NumBytes}";
+                result += $"\n{{";
+                foreach(SpirvTypeMember member in Members)
+                    result += $"\n   {member}";
+
+                result += $"\n}}";
+                return result;
+            }
+            else
+            {
+                string elType = ElementType == null ? "" : $" -- Element: [{ElementType}]";
+                return $"Type({ID}) - {Kind} -- Length: {Length} -- Bytes: {NumBytes}{elType}";
+            }
         }
 
         /// <summary>
@@ -70,11 +84,6 @@ namespace SpirvReflector
         public uint ByteOffset { get; internal set; }
 
         /// <summary>
-        /// Gets the number of bytes occupied by the member.
-        /// </summary>
-        public uint NumBytes { get; internal set; }
-
-        /// <summary>
         /// Gets the name of the member.
         /// </summary>
         public string Name { get; internal set; }
@@ -83,6 +92,12 @@ namespace SpirvReflector
         /// Gets the <see cref="SpirvType"/> of value stored by the member.
         /// </summary>
         public SpirvType Type { get; internal set; }
+
+        public override string ToString()
+        {
+            string name = string.IsNullOrWhiteSpace(Name) ? "" : $"Name: {Name} -- ";
+            return $"{name}{Type.Kind} -- Offset: {ByteOffset} -- Bytes: {Type.NumBytes}";
+        }
     }
 
     public enum SpirvTypeKind
