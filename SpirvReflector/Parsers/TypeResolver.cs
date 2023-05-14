@@ -23,6 +23,7 @@ namespace SpirvReflector
             {
                 t = new SpirvType();
                 t.Length = 1;
+                t.ID = refID;
                 SpirvInstruction inst = context.Assignments[refID];
 
                 switch (inst.OpCode)

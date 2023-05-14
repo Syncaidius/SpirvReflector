@@ -25,6 +25,7 @@ namespace SpirvReflector
                     {
                         Control = inst.GetOperandValue<SpirvFunctionControl>(2),
                         Start = inst,
+                        ID = inst.Result.Value,
                     };
 
                     uint returnTypeId = inst.GetOperandValue<uint>(0);

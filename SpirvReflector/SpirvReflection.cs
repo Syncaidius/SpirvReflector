@@ -110,7 +110,6 @@ namespace SpirvReflector
             context.Assignments = new SpirvInstruction[context.Result.Bound];
             ReadInstructions(stream, context);
             context.Result.InstructionCount = context.Instructions.Count;
-
             context.Elements.AddRange(context.Instructions);
 
             Run<InitialProcessor>(context);

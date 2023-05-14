@@ -19,7 +19,7 @@ namespace SpirvReflector
             SpirvFunctionControl funcControl = Start.GetOperandValue<SpirvFunctionControl>();
             SpirvIdRef defID = Start.GetOperand<SpirvIdRef>(3); // ref to OpTypeFunction 
 
-            string result = $"[FunctionControl.{funcControl}]";
+            string result = $"[ID:{ID}] [FunctionControl.{funcControl}]";
             result += $"\n{returnType}Function()";
             result += $"\n{{";
 
@@ -39,6 +39,11 @@ namespace SpirvReflector
         public SpirvType ReturnType { get; internal set; }
 
         public SpirvFunctionControl Control { get; internal set; }
+
+        /// <summary>
+        /// Gets the ID that was assigned to the type in the SPIR-V bytecode.
+        /// </summary>
+        public uint ID { get; internal set; }
 
         public int InstructionCount => Instructions.Count;
 

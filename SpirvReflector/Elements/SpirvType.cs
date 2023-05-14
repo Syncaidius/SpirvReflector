@@ -18,9 +18,8 @@ namespace SpirvReflector
 
         public override string ToString()
         {
-            string name = string.IsNullOrWhiteSpace(Name) ? "" : $"({Name})";
             string elType = ElementType == null ? "" : $" -- Element: [{ElementType}]";
-            return $"Type{name} - {Kind} -- Length: {Length} -- Bytes: {NumBytes}{elType}";
+            return $"Type({ID}) - {Kind} -- Length: {Length} -- Bytes: {NumBytes}{elType}";
         }
 
         /// <summary>
@@ -54,6 +53,11 @@ namespace SpirvReflector
         /// Gets a read-only list of the members that are part of the current type.
         /// </summary>
         public IReadOnlyList<SpirvTypeMember> Members => _members;
+
+        /// <summary>
+        /// Gets the ID that was assigned to the type in the SPIR-V bytecode.
+        /// </summary>
+        public uint ID { get; internal set; }
     }
 
     public class SpirvTypeMember
