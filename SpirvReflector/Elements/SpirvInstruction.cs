@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,16 +19,29 @@ namespace SpirvReflector
             Operands = new List<SpirvWord>();
         }
 
-        public T GetOperandWord<T>()
+        public T GetOperand<T>()
             where T : SpirvWord
         {
             foreach(SpirvWord w in Operands)
             {
                 if (w is T wt)
                     return wt;
+                else
+                    throw new InvalidOperationException($"The current instruction does not contain an operand of type '{typeof(T).Name}'");
             }
 
             return null;
+        }
+
+        public T GetOperand<T>(int index)
+            where T : SpirvWord
+        {
+            SpirvWord word = Operands[index];
+
+            if (word is T wt)
+                return wt;
+            else
+                throw new InvalidOperationException($"The word at index {index} is not of the type '{typeof(T).Name}'");
         }
 
         /// <summary>
@@ -35,7 +49,7 @@ namespace SpirvReflector
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetOperand<T>()
+        public T GetOperandValue<T>()
             where T : unmanaged
         {
             foreach (SpirvWord w in Operands)
@@ -47,7 +61,7 @@ namespace SpirvReflector
             return default;
         }
 
-        public T GetOperand<T>(int index)
+        public T GetOperandValue<T>(int index)
             where T : unmanaged
         {
             return (Operands[index] as SpirvWord<T>).Value;
@@ -82,10 +96,33 @@ namespace SpirvReflector
 
         public override string ToString()
         {
+            string opResult = Result != null ? $"{Result} = " : "";
             if (Operands.Count > 0)
-                return $"{OpCode} - {WordCount} words";
+            {
+                string operands = GetOperandString();
+                return $"{opResult}{OpCode} -- {operands}";
+            }
             else
-                return $"{OpCode}";
+            {
+                return $"{opResult}{OpCode}";
+            }
+        }
+
+        internal string GetOperandString()
+        {
+            string result = "";
+            for (int i = 0; i < Operands.Count; i++)
+            {
+                if (Operands[i] is SpirvIdResult)
+                    continue;
+
+                if (result.Length > 0)
+                    result += ", ";
+
+                result += Operands[i].ToString();
+            }
+
+            return result;
         }
 
         /// <summary>

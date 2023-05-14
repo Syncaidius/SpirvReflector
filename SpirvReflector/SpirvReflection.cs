@@ -135,16 +135,7 @@ namespace SpirvReflector
             for(int i = 0; i < context.Instructions.Count; i++)
             {
                 SpirvInstruction inst = context.Instructions[i];
-                string opResult = inst.Result != null ? $"{inst.Result} = " : "";
-                if (inst.Operands.Count > 0)
-                {
-                    string operands = GetOperandString(inst);
-                    Log.WriteLine($"I_{i}: {opResult}{inst.OpCode} -- {operands}");
-                }
-                else
-                {
-                    Log.WriteLine($"I_{i}: {opResult}{inst.OpCode}");
-                }
+                Log.WriteLine($"I_{i}: {inst}");
             }
         }
 
@@ -159,60 +150,13 @@ namespace SpirvReflector
             string caps = string.Join(", ", context.Result.Capabilities.Select(c => c.ToString()));
             string exts = string.Join(", ", context.Result.Extensions);
 
-            Log.WriteLine("Translated:", ConsoleColor.Green);
+            Log.WriteLine("\nTranslated:", ConsoleColor.Green);
             Log.WriteLine($"Capabilities: {caps}");
             Log.WriteLine($"Extensions: {exts}");
             Log.WriteLine($"Memory Model: {context.Result.AddressingModel} -- {context.Result.MemoryModel}");
 
-            uint eID = 0;
-            foreach (SpirvBytecodeElement element in context.Elements)
-            {
-                switch (element)
-                {
-                    case SpirvInstruction inst:
-                        {
-                            string opResult = inst.Result != null ? $"{inst.Result} = " : "";
-                            if (inst.Operands.Count > 0)
-                            {
-                                string operands = SpirvReflection.GetOperandString(inst);
-                                Log.WriteLine($"E_{eID}: {opResult}{inst.OpCode} -- {operands}");
-                            }
-                            else
-                            {
-                                Log.WriteLine($"E_{eID}: {opResult}{inst.OpCode}");
-                            }
-                        }
-                        break;
-
-                    case SpirvFunction func:
-                        {
-                            string returnType = "";
-                            if (func.ReturnType != null)
-                                returnType = $"{(func.ReturnType.Name ?? func.ReturnType.Kind.ToString())} ";
-
-                            // TODO fetch function parameter definition
-                            SpirvFunctionControl funcControl = func.Start.GetOperand<SpirvFunctionControl>();
-                            uint defID = func.Start.GetOperand<uint>(3);
-                            SpirvInstruction funcDef = context.Assignments[defID];
-
-                            Log.WriteLine($"E_{eID}:");
-                            Log.WriteLine($"[FunctionControl.{funcControl}]");
-                            Log.WriteLine($"{returnType}Function()");
-                            Log.WriteLine($"{{");
-                            foreach (SpirvInstruction inst in func.Instructions)
-                                Log.WriteLine($"    {inst}");
-                            Log.WriteLine($"}}");
-                        }
-                        break;
-
-                    default:
-                        Log.WriteLine($"E_{eID}: {element}");
-                        break;
-                }
-
-                eID++;
-
-            }
+            for(int i = 0; i < context.Elements.Count; i++)
+                Log.WriteLine($"E_{i}: {context.Elements[i]}");
         }
 
         private void ReadInstructions(SpirvStream stream, SpirvReflectContext context)
@@ -281,23 +225,6 @@ namespace SpirvReflector
             {
                 Log.Warning($"Unknown word type: {wordTypeName}");
             }
-        }
-
-        internal static string GetOperandString(SpirvInstruction instruction)
-        {
-            string result = "";
-            for(int i = 0; i < instruction.Operands.Count; i++)
-            {
-                if (instruction.Operands[i] is SpirvIdResult)
-                    continue;
-
-                if (result.Length > 0)
-                    result += ", ";
-
-                result += instruction.Operands[i].ToString();
-            }
-
-            return result;
         }
 
         private Type GetWordType(string typeName)

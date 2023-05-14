@@ -27,22 +27,22 @@ namespace SpirvReflector
                     break;
 
                 case SpirvOpCode.OpMemoryModel:
-                    context.Result.AddressingModel = inst.GetOperand<SpirvAddressingModel>();
-                    context.Result.MemoryModel = inst.GetOperand<SpirvMemoryModel>();
+                    context.Result.AddressingModel = inst.GetOperandValue<SpirvAddressingModel>();
+                    context.Result.MemoryModel = inst.GetOperandValue<SpirvMemoryModel>();
                     break;
 
                 case SpirvOpCode.OpSource:
                     SpirvSource src = new SpirvSource()
                     {
-                        Language = inst.GetOperand<SpirvSourceLanguage>(),
-                        Version = inst.GetOperand<uint>(1),
+                        Language = inst.GetOperandValue<SpirvSourceLanguage>(),
+                        Version = inst.GetOperandValue<uint>(1),
                         Source = inst.GetOperandString(3),
                     };
 
                     // Filename is optional.
                     if (inst.Operands.Count >= 3)
                     {
-                        uint fnID = inst.GetOperand<uint>(2);
+                        uint fnID = inst.GetOperandValue<uint>(2);
                         SpirvInstruction fn = context.Assignments[fnID];
                         src.Filename = fn.GetOperandString(1);
                     }

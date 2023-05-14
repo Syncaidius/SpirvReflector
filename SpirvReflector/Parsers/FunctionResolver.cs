@@ -22,11 +22,11 @@ namespace SpirvReflector
 
                     _curFunc = new SpirvFunction()
                     {
-                        Control = inst.GetOperand<SpirvFunctionControl>(2),
+                        Control = inst.GetOperandValue<SpirvFunctionControl>(2),
                         Start = inst,
                     };
 
-                    uint returnTypeId = inst.GetOperand<uint>(0);
+                    uint returnTypeId = inst.GetOperandValue<uint>(0);
                     if (context.OpTypes.TryGetValue(returnTypeId, out SpirvType returnType))
                         _curFunc.ReturnType = returnType;
 
