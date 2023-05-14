@@ -32,11 +32,15 @@ namespace SpirvReflector
                         _curFunc.ReturnType = returnType;
 
                     // Get parameters from referenced OpTypeFunction.
-                    SpirvIdRef fType = inst.GetOperand<SpirvIdRef>(3);
-                    for(int i = 2; i < fType.Ref.Operands.Count; i++) // Parameters start at at operand 2 in OpTypeFunction
+                    SpirvIdRef tRef = inst.GetOperand<SpirvIdRef>(3);
+                    SpirvInstruction fTypeRef = context.Assignments[tRef];
+                    for(int i = 2; i < fTypeRef.Operands.Count; i++) // Parameters start at at operand 2 in OpTypeFunction
                     {
-                        if (fType.Ref.Operands[i] is SpirvIdRef pRef)
-                            _curFunc.Parameters.Add(pRef.Ref);
+                        if (fTypeRef.Operands[i] is SpirvIdRef paramRef)
+                        {
+                            SpirvInstruction instParam = context.Assignments[paramRef];
+                            _curFunc.Parameters.Add(instParam);
+                        }
                     }
 
                     context.Functions.Add(_curFunc);

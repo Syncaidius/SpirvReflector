@@ -14,9 +14,16 @@ namespace SpirvReflector
             if (inst.Result == null)
                 return;
 
-            if (!context.OpTypes.TryGetValue(inst.Result.Value, out SpirvType t))
+            ResolveType(inst.Result.Value, context);
+        }
+
+        private SpirvType ResolveType(uint refID, SpirvReflectContext context)
+        {
+            if (!context.OpTypes.TryGetValue(refID, out SpirvType t))
             {
                 t = new SpirvType();
+                t.Length = 1;
+                SpirvInstruction inst = context.Assignments[refID];
 
                 switch (inst.OpCode)
                 {
@@ -30,19 +37,34 @@ namespace SpirvReflector
 
                     case SpirvOpCode.OpTypeBool:
                         t.Kind = SpirvTypeKind.Bool;
+                        t.NumBytes = 1;
                         break;
 
                     case SpirvOpCode.OpTypeFloat:
                         t.Kind = SpirvTypeKind.Float;
+                        t.NumBytes = inst.GetOperandValue<uint>(1) / 8;
                         break;
 
                     case SpirvOpCode.OpTypeInt:
-                        t.Kind = SpirvTypeKind.Int;
+                        uint signed = inst.GetOperandValue<uint>(2);
+                        t.Kind = signed == 1 ? SpirvTypeKind.Int : SpirvTypeKind.UInt;
+                        t.NumBytes = inst.GetOperandValue<uint>(1) / 8;
                         break;
 
                     case SpirvOpCode.OpTypeMatrix:
                         t.Kind = SpirvTypeKind.Matrix;
+                        uint elTypeID = inst.GetOperandValue<uint>(1);
+                        t.ElementType = ResolveType(elTypeID, context);
+                        t.Length = inst.GetOperandValue<uint>(2);
+                        t.NumBytes = t.ElementType.NumBytes * t.Length;
+                        break;
 
+                    case SpirvOpCode.OpTypeVector:
+                        t.Kind = SpirvTypeKind.Vector;
+                        uint comTypeID = inst.GetOperandValue<uint>(1);
+                        t.ElementType = ResolveType(comTypeID, context);
+                        t.Length = inst.GetOperandValue<uint>(2);
+                        t.NumBytes = t.ElementType.NumBytes * t.Length;
                         break;
 
                     case SpirvOpCode.OpTypeVoid:
@@ -50,13 +72,14 @@ namespace SpirvReflector
                         break;
 
                     default:
-                        return;
+                        return t;
                 }
 
                 context.OpTypes.Add(inst.Result.Value, t);
+                context.ReplaceElement(inst, t);
             }
 
-            context.ReplaceElement(inst, t);
+            return t;
         }
     }
 }

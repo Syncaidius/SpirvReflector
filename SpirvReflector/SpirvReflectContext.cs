@@ -8,6 +8,7 @@ namespace SpirvReflector
 {
     internal class SpirvReflectContext
     {
+        internal SpirvInstruction[] Assignments;
 
         internal SpirvReflectContext(SpirvReflection reflection)
         {
@@ -29,7 +30,6 @@ namespace SpirvReflector
 
         internal List<SpirvBytecodeElement> Elements { get; } = new List<SpirvBytecodeElement>();
 
-        internal SpirvInstruction[] Assignments;
         internal Dictionary<uint, SpirvType> OpTypes { get; } = new Dictionary<uint, SpirvType>();
 
         internal List<SpirvFunction> Functions { get; } = new List<SpirvFunction>();

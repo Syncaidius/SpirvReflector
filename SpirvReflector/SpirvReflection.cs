@@ -114,11 +114,11 @@ namespace SpirvReflector
             context.Elements.AddRange(context.Instructions);
 
             Run<InitialProcessor>(context);
-            Run<RefResolver>(context);
             Run<TypeResolver>(context);
             Run<FunctionResolver>(context);
 
             LogInstructions(context);
+            LogAssignments(context);
             LogElements(context);
 
             return context.Result;
@@ -138,6 +138,16 @@ namespace SpirvReflector
                 SpirvInstruction inst = context.Instructions[i];
                 Log.WriteLabeled($"{i}", inst.ToString());
             }
+        }
+
+        private void LogAssignments(SpirvReflectContext context)
+        {
+            if (Log == null) 
+                return;
+
+            Log.WriteLine("\nAssignments:", ConsoleColor.Green);
+            for (int i = 1; i < context.Assignments.Length; i++)
+                Log.WriteLine(context.Assignments[i].ToString());
         }
 
         /// <summary>
@@ -181,7 +191,7 @@ namespace SpirvReflector
                 }
                 else
                 {
-                    Log.Warning($"I_{instID}: Unknown opcode '{inst.OpCode}' ({(uint)inst.OpCode}).");
+                    Log.Warning($"{instID}: Unknown opcode '{inst.OpCode}' ({(uint)inst.OpCode}).");
                 }
 
                 instID++;

@@ -19,7 +19,8 @@ namespace SpirvReflector
         public override string ToString()
         {
             string name = string.IsNullOrWhiteSpace(Name) ? "" : $"({Name})";
-            return $"Type{name} - {Kind}";
+            string elType = ElementType == null ? "" : $" -- Element: [{ElementType}]";
+            return $"Type{name} - {Kind} -- Length: {Length} -- Bytes: {NumBytes}{elType}";
         }
 
         /// <summary>
@@ -36,7 +37,18 @@ namespace SpirvReflector
         /// Gets the dimensions of the type. Each element in the array represents the size of a dimension. 
         /// <para>The minimium dimension size is 1.</para>
         /// </summary>
-        public uint[] Dimensions { get; internal set; }
+        public uint Length { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="SpirvType"/> of the elements that are part of the current type.
+        /// <para>if any. If the element is not an array-based type such as a vector or matrix, then this property is null.</para>
+        /// </summary>
+        public SpirvType ElementType { get; internal set; }
+
+        /// <summary>
+        /// Gets the total number of bytes occupied by the type.
+        /// </summary>
+        public uint NumBytes { get; internal set; }
 
         /// <summary>
         /// Gets a read-only list of the members that are part of the current type.

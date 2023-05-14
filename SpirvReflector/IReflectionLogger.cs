@@ -12,7 +12,7 @@ namespace SpirvReflector
 
         void WriteLine(string value, ConsoleColor color = ConsoleColor.White);
 
-        void WriteLabeled(string label, string text, ConsoleColor labelColor = ConsoleColor.Yellow, ConsoleColor valueColor = ConsoleColor.White);
+        void WriteLabeled(string label, string text, ConsoleColor labelColor = ConsoleColor.DarkGray, ConsoleColor valueColor = ConsoleColor.White);
 
         void Error(string text);
 
