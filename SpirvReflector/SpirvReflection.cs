@@ -115,6 +115,7 @@ namespace SpirvReflector
             Run<InitialProcessor>(context);
             Run<TypeResolver>(context);
             Run<FunctionResolver>(context);
+            Run<NameResolver>(context);
 
             LogInstructions(context);
             LogAssignments(context);

@@ -21,7 +21,10 @@ namespace SpirvReflector
         {
             if (Kind == SpirvTypeKind.Struct)
             {
-                string result = $"Struct -- Bytes: {NumBytes}";
+                string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
+
+                string result = $"[ID: {ID}]";
+                result += $"\nStruct{name} -- Bytes: {NumBytes}";
                 result += $"\n{{";
                 foreach(SpirvTypeMember member in Members)
                     result += $"\n   {member}";
@@ -95,8 +98,8 @@ namespace SpirvReflector
 
         public override string ToString()
         {
-            string name = string.IsNullOrWhiteSpace(Name) ? "" : $"Name: {Name} -- ";
-            return $"{name}{Type.Kind} -- Offset: {ByteOffset} -- Bytes: {Type.NumBytes}";
+            string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
+            return $"{Type.Kind}{name} -- Offset: {ByteOffset} -- Bytes: {Type.NumBytes}";
         }
     }
 
