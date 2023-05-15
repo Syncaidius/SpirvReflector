@@ -19,9 +19,9 @@ namespace SpirvReflector
 
         private SpirvType ResolveType(uint refID, SpirvReflectContext context)
         {
-            if (!context.OpTypes.TryGetValue(refID, out SpirvType t))
+            if (!context.AssignedElements.TryGetValue(refID, out SpirvBytecodeElement e))
             {
-                t = new SpirvType();
+                SpirvType t = new SpirvType();
                 t.Length = 1;
                 t.ID = refID;
                 SpirvInstruction inst = context.Assignments[refID];
@@ -88,11 +88,12 @@ namespace SpirvReflector
                         return t;
                 }
 
-                context.OpTypes.Add(inst.Result.Value, t);
+                e = t;
+                context.AssignedElements.Add(refID, t);
                 context.ReplaceElement(inst, t);
             }
 
-            return t;
+            return e as SpirvType;
         }
     }
 }

@@ -20,7 +20,8 @@ namespace SpirvReflector
             SpirvIdRef defID = Start.GetOperand<SpirvIdRef>(3); // ref to OpTypeFunction 
 
             string result = $"[ID:{ID}] [FunctionControl.{funcControl}]";
-            result += $"\n{returnType}Function()";
+            string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
+            result += $"\n{returnType}Function{name}()";
             result += $"\n{{";
 
             foreach (SpirvInstruction inst in Instructions)
@@ -28,8 +29,13 @@ namespace SpirvReflector
 
             result += $"\n}}";
             return result;
-
         }
+
+        /// <summary>
+        /// Gets the name of the current function.
+        /// </summary>
+        public string Name { get; internal set; }
+
         internal List<SpirvInstruction> Instructions { get; } = new List<SpirvInstruction>();
 
         internal SpirvInstruction Start { get; set; }

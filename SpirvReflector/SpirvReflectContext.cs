@@ -30,9 +30,7 @@ namespace SpirvReflector
 
         internal List<SpirvBytecodeElement> Elements { get; } = new List<SpirvBytecodeElement>();
 
-        internal Dictionary<uint, SpirvType> OpTypes { get; } = new Dictionary<uint, SpirvType>();
-
-        internal List<SpirvFunction> Functions { get; } = new List<SpirvFunction>();
+        internal Dictionary<uint, SpirvBytecodeElement> AssignedElements { get; } = new Dictionary<uint, SpirvBytecodeElement>();
 
         internal IReflectionLogger Log => Reflection.Log;
     }

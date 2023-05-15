@@ -16,9 +16,17 @@ namespace SpirvReflector
                 case SpirvOpCode.OpName:
                     {
                         uint typeRefID = inst.GetOperandValue<uint>(0);
-                        if (context.OpTypes.TryGetValue(typeRefID, out SpirvType t))
+                        if(typeRefID == 1)
                         {
-                            t.Name = inst.GetOperandString(1);
+
+                        }
+                        if (context.AssignedElements.TryGetValue(typeRefID, out SpirvBytecodeElement e))
+                        {
+                            string name = inst.GetOperandString(1);
+                            if (e is SpirvType t)
+                                t.Name = name;
+                            else if (e is SpirvFunction f)
+                                f.Name = name;
                         }
                         else
                         {
@@ -31,22 +39,26 @@ namespace SpirvReflector
                 case SpirvOpCode.OpMemberName:
                     {
                         uint typeRefID = inst.GetOperandValue<uint>(0);
-                        if (context.OpTypes.TryGetValue(typeRefID, out SpirvType t))
+                        if (context.AssignedElements.TryGetValue(typeRefID, out SpirvBytecodeElement e))
                         {
-                            uint memberIndex = inst.GetOperandValue<uint>(1);
-                            if (memberIndex < t.Members.Count)
+                            if (e is SpirvType t)
                             {
-                                t.Members[(int)memberIndex].Name = inst.GetOperandString(2);
-                            }
-                            else
-                            {
-                                context.Log.Warning($"Failed to find member with index '{memberIndex}' for OpMemberName assignment.");
-                                return;
+                                uint memberIndex = inst.GetOperandValue<uint>(1);
+                                if (memberIndex < t.Members.Count)
+                                {
+                                    t.Members[(int)memberIndex].Name = inst.GetOperandString(2);
+                                }
+                                else
+                                {
+                                    context.Log.Warning($"Failed to find member with index '{memberIndex}' for OpMemberName assignment.");
+                                    return;
+                                }
                             }
                         }
                         else
                         {
                             context.Log.Warning($"Failed to find translated type with ID {typeRefID} for OpMemberName assignment.");
+                            return;
                         }
                     }
                     break;
