@@ -20,7 +20,7 @@ namespace SpirvReflector
             SpirvIdRef defID = Start.GetOperand<SpirvIdRef>(3); // ref to OpTypeFunction 
 
             string result = $"[ID:{ID}] [FunctionControl.{funcControl}]";
-            string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
+            string name = string.IsNullOrWhiteSpace(Name) ? " _unamed_" : $" {Name}";
             result += $"\n{returnType}Function{name}()";
             result += $"\n{{";
 
