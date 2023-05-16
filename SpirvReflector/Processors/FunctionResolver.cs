@@ -28,7 +28,6 @@ namespace SpirvReflector
                         ID = inst.Result.Value,
                     };
 
-
                     uint returnTypeId = inst.GetOperandValue<uint>(0);
                     if (context.AssignedElements.TryGetValue(returnTypeId, out SpirvBytecodeElement returnType))
                     {

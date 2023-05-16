@@ -6,12 +6,22 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public class SpirvVariable : SpirvBytecodeElement
+    public class SpirvVariable : SpirvDecoratedElement
     {
         public override string ToString()
         {
-            string name = string.IsNullOrWhiteSpace(Name) ? " _unnamed_" : $" {Name}";
-            return $"{Pointer.Type.Kind}*{name} ({ID})";
+            string decoration = base.ToString();
+            string name = string.IsNullOrWhiteSpace(Name) ? "_unnamed_" : $"{Name}";
+
+            string r = $"[ID: {ID}]";
+            if(decoration.Length > 0)
+                r += $"{decoration} ";
+
+            r += $"{Pointer.Type.Kind}* {name}";
+            if(DefaultValue != null)
+                r += $" = {DefaultValue}";
+
+            return r;
         }
 
         public string Name { get; internal set; }

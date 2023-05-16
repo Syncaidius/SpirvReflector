@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
-    public class SpirvType : SpirvBytecodeElement
+    public class SpirvType : SpirvDecoratedElement
     {
         List<SpirvTypeMember> _members = new List<SpirvTypeMember>();
 
@@ -19,11 +19,14 @@ namespace SpirvReflector
 
         public override string ToString()
         {
+            string decoration = base.ToString();
+
             if (Kind == SpirvTypeKind.Struct)
             {
                 string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
 
                 string result = $"[ID: {ID}]";
+                result += decoration.Length > 0 ? $"{decoration}" : "";
                 result += $"\nStruct{name} -- Bytes: {NumBytes}";
                 result += $"\n{{";
                 foreach(SpirvTypeMember member in Members)

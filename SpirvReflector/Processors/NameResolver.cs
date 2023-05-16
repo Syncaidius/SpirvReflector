@@ -23,10 +23,20 @@ namespace SpirvReflector
                         if (context.AssignedElements.TryGetValue(typeRefID, out SpirvBytecodeElement e))
                         {
                             string name = inst.GetOperandString(1);
-                            if (e is SpirvType t)
-                                t.Name = name;
-                            else if (e is SpirvFunction f)
-                                f.Name = name;
+                            switch (e)
+                            {
+                                case SpirvType t:
+                                    t.Name = name;
+                                    break;
+
+                                case SpirvFunction f:
+                                    f.Name = name;
+                                    break;
+
+                                case SpirvVariable v:
+                                    v.Name = name;
+                                    break;
+                            }
                         }
                         else
                         {
