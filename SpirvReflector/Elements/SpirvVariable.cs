@@ -24,14 +24,34 @@ namespace SpirvReflector
             return r;
         }
 
+        /// <summary>
+        /// Gets the name of the variable.
+        /// </summary>
         public string Name { get; internal set; }
 
+        /// <summary>
+        /// Gets the SPIR-V assignment ID of the variable.
+        /// </summary>
         public uint ID { get; internal set; }
 
+        /// <summary>
+        /// Gets the binding slot or ID of the variable.
+        /// </summary>
+        public uint Binding { get; internal set; }
+
+        /// <summary>
+        /// Gets the pointer of the variable.
+        /// </summary>
         public SpirvPointer Pointer { get; internal set; }
 
+        /// <summary>
+        /// Gets the default value of the variable, if any.
+        /// </summary>
         public SpirvConstant DefaultValue { get; internal set; }
 
+        /// <summary>
+        /// Gets the storage class of the variable.
+        /// </summary>
         public SpirvStorageClass StorageClass { get; internal set; }
     }
 }

@@ -24,8 +24,13 @@ namespace SpirvReflector
                             SpirvWord w = inst.Operands[i];
                             decValues.Add(w.GetValue());
                         }
+
+                        // Check if we're applying a binding/slot ID.
                         SpirvDecoratedElement element = context.AssignedElements[targetID] as SpirvDecoratedElement;
-                        element.Decorations.AddDecoration(dec, decValues);
+                        if (dec == SpirvDecoration.Binding && element is SpirvVariable v)
+                            v.Binding = (uint)decValues[0];
+                        else
+                            element.Decorations.AddDecoration(dec, decValues);
                     }
                     break;
 

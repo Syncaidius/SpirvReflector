@@ -39,13 +39,18 @@ namespace SpirvReflector
                         initializer = context.AssignedElements[(uint)initID] as SpirvConstant;
                     }
 
-                    e = new SpirvVariable()
+                    SpirvVariable v = new SpirvVariable()
                     {
                         ID = inst.Result.Value,
                         StorageClass = inst.GetOperandValue<SpirvStorageClass>(2),
                         DefaultValue = initializer,
                         Pointer = context.AssignedElements[pointerID] as SpirvPointer
                     };
+
+                    e = v;
+                    if (v.StorageClass == SpirvStorageClass.Uniform)
+                        context.Result.AddUniform(v);
+
                     break;
 
                 default:
