@@ -13,25 +13,27 @@ namespace SpirvReflector
         {
             switch (inst.OpCode)
             {
+                case SpirvOpCode.OpDecorateStringGOOGLE:
                 case SpirvOpCode.OpDecorate:
-                    uint targetID = inst.GetOperandValue<uint>(0);
-                    SpirvDecoration dec = inst.GetOperandValue<SpirvDecoration>();
-                    List<object> decValues = new List<object>();
-                    for (int i = 2; i < inst.Operands.Count; i++) {
-                        SpirvWord w = inst.Operands[i];
-                        decValues.Add(w.GetValue());
+                    {
+                        uint targetID = inst.GetOperandValue<uint>(0);
+                        SpirvDecoration dec = inst.GetOperandValue<SpirvDecoration>();
+                        List<object> decValues = new List<object>();
+                        for (int i = 2; i < inst.Operands.Count; i++)
+                        {
+                            SpirvWord w = inst.Operands[i];
+                            decValues.Add(w.GetValue());
+                        }
+                        SpirvDecoratedElement element = context.AssignedElements[targetID] as SpirvDecoratedElement;
+                        element.Decorations.AddDecoration(dec, decValues);
                     }
-                    SpirvDecoratedElement element = context.AssignedElements[targetID] as SpirvDecoratedElement;
-                    element.Decorations.AddDecoration(dec, decValues);
                     break;
 
                 /*case SpirvOpCode.OpMemberDecorate:
 
                     break;
 
-                case SpirvOpCode.OpDecorateStringGOOGLE:
-                    
-                    break;*/
+                */
 
                 default:
                     return;

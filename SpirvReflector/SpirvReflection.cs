@@ -162,10 +162,12 @@ namespace SpirvReflector
 
             string caps = string.Join(", ", context.Result.Capabilities.Select(c => c.ToString()));
             string exts = string.Join(", ", context.Result.Extensions);
+            string sources = string.Join(", ", context.Result.Sources.Select(s => s.Filename));
 
             Log.WriteLine("\nProcessed:", ConsoleColor.Green);
             Log.WriteLabeled("Capabilities", $"{caps}");
             Log.WriteLabeled("Extensions", $"{exts}");
+            Log.WriteLabeled("Sources", $"{sources}");
             Log.WriteLabeled("Memory Model", $"{context.Result.AddressingModel} -- {context.Result.MemoryModel}");
 
             for (int i = 0; i < context.Elements.Count; i++)
