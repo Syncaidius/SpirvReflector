@@ -45,6 +45,9 @@ namespace SpirvReflector
                         uint fnID = inst.GetOperandValue<uint>(2);
                         SpirvInstruction fn = context.Assignments[fnID];
                         src.Filename = fn.GetOperandString(1);
+
+                        // Filename strings will only be used by OpSource instructions, so we can remove them.
+                        context.Elements.Remove(fn);
                     }
 
                     context.Result.AddSource(src);
