@@ -24,7 +24,6 @@ namespace SpirvReflector
             if (Kind == SpirvTypeKind.Struct)
             {
                 string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
-
                 string result = $"[ID: {ID}]";
                 result += decoration.Length > 0 ? $"{decoration}" : "";
                 result += $"\nStruct{name} -- Bytes: {NumBytes}";
@@ -80,7 +79,7 @@ namespace SpirvReflector
         public uint ID { get; internal set; }
     }
 
-    public class SpirvTypeMember
+    public class SpirvTypeMember : SpirvDecoratedElement
     {
         internal SpirvTypeMember() { }
 
@@ -101,8 +100,9 @@ namespace SpirvReflector
 
         public override string ToString()
         {
+            string decoration = base.ToString();
             string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
-            return $"{Type.Kind}{name} -- Offset: {ByteOffset} -- Bytes: {Type.NumBytes}";
+            return $"{decoration}{Type.Kind}{name} -- Offset: {ByteOffset} -- Bytes: {Type.NumBytes}";
         }
     }
 
