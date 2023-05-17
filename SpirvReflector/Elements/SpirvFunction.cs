@@ -21,7 +21,9 @@ namespace SpirvReflector
 
             string result = $"[ID:{ID}][FunctionControl.{funcControl}]";
             string name = string.IsNullOrWhiteSpace(Name) ? " _unamed_" : $" {Name}";
-            result += $"\n{returnType}Function{name}()";
+            string parameters = string.Join(", ", Parameters.Select(p => p.Name ?? p.Kind.ToString()));
+
+            result += $"\n{returnType}Function{name}({parameters})";
             result += $"\n{{";
 
             foreach (SpirvInstruction inst in Instructions)
@@ -53,6 +55,6 @@ namespace SpirvReflector
 
         public int InstructionCount => Instructions.Count;
 
-        public List<SpirvInstruction> Parameters { get; } = new List<SpirvInstruction>();
+        public List<SpirvType> Parameters { get; } = new List<SpirvType>();
     }
 }

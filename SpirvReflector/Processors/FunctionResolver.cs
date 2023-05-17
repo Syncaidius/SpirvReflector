@@ -36,16 +36,9 @@ namespace SpirvReflector
                     }
 
                     // Get parameters from referenced OpTypeFunction.
-                    SpirvIdRef tRef = inst.GetOperand<SpirvIdRef>(3);
-                    SpirvInstruction fTypeRef = context.Assignments[tRef];
-                    for(int i = 2; i < fTypeRef.Operands.Count; i++) // Parameters start at at operand 2 in OpTypeFunction
-                    {
-                        if (fTypeRef.Operands[i] is SpirvIdRef paramRef)
-                        {
-                            SpirvInstruction instParam = context.Assignments[paramRef];
-                            _curFunc.Parameters.Add(instParam);
-                        }
-                    }
+                    uint funcTypeID = inst.GetOperandValue<uint>(3);
+                    SpirvInstruction funcType = context.Assignments[funcTypeID];
+                    ResolveFunctionType(context, funcType, _curFunc);
 
                     context.AssignedElements.Add(_curFunc.ID, _curFunc);
                     context.ReplaceElement(inst, _curFunc);
@@ -73,6 +66,21 @@ namespace SpirvReflector
             }
 
             context.Elements.Remove(inst);
+        }
+
+        private void ResolveFunctionType(SpirvReflectContext context, SpirvInstruction funcType, SpirvFunction func)
+        {
+            if (funcType.OpCode != SpirvOpCode.OpTypeFunction)
+                return;
+
+            for (int i = 2; i < funcType.Operands.Count; i++) // Parameters start at at operand 2 in OpTypeFunction
+            {
+                uint pTypeID = funcType.GetOperandValue<uint>(i);
+                SpirvType pType = context.AssignedElements[pTypeID] as SpirvType;
+                _curFunc.Parameters.Add(pType);
+            }
+
+            context.Elements.Remove(funcType);
         }
 
         protected override void OnCompleted()
