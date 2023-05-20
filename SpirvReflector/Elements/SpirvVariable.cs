@@ -17,7 +17,7 @@ namespace SpirvReflector
             if(decoration.Length > 0)
                 r += $"{decoration} ";
 
-            r += $"{Pointer.Type.Kind}* {name}";
+            r += $"{Type.Kind}* {name}";
             if(DefaultValue != null)
                 r += $" = {DefaultValue}";
 
@@ -42,7 +42,7 @@ namespace SpirvReflector
         /// <summary>
         /// Gets the pointer of the variable.
         /// </summary>
-        public SpirvPointer Pointer { get; internal set; }
+        public SpirvType Type { get; internal set; }
 
         /// <summary>
         /// Gets the default value of the variable, if any.
