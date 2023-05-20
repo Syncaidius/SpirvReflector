@@ -9,16 +9,9 @@ namespace SpirvReflector
 {
     public class SpirvReflectionResult
     {
-        public class EntryPoint
-        {
-            public SpirvExecutionModel ExecutionModel { get; internal set; }
-
-            public string Name { get; internal set; }
-        }
-
         List<SpirvCapability> _capabilities;
         List<SpirvSource> _sources;
-        List<EntryPoint> _entryPoints;
+        List<SpirvEntryPoint> _entryPoints;
         List<string> _extensions;
         List<SpirvVariable> _uniforms;
 
@@ -29,7 +22,7 @@ namespace SpirvReflector
             _capabilities = new List<SpirvCapability>();
             _sources = new List<SpirvSource>();
             _extensions = new List<string>();
-            _entryPoints = new List<EntryPoint>();
+            _entryPoints = new List<SpirvEntryPoint>();
             _uniforms = new List<SpirvVariable>();
         }
 
@@ -51,6 +44,11 @@ namespace SpirvReflector
         internal void AddUniform(SpirvVariable uniform)
         {
             _uniforms.Add(uniform);
+        }
+
+        internal void AddEntryPoint(SpirvEntryPoint entryPoint)
+        {
+            _entryPoints.Add(entryPoint);
         }
 
         /// <summary>
@@ -102,8 +100,11 @@ namespace SpirvReflector
         /// <summary>
         /// Gets a list of entry points that were found in the bytecode.
         /// </summary>
-        public IReadOnlyList<EntryPoint> EntryPoints => _entryPoints;
+        public IReadOnlyList<SpirvEntryPoint> EntryPoints => _entryPoints;
 
+        /// <summary>
+        /// Gets a list of uniform variables that were found in the bytecode.
+        /// </summary>
         public IReadOnlyList<SpirvVariable> Uniforms => _uniforms;
 
         /// <summary>
