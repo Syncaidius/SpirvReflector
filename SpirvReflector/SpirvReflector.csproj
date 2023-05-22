@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>SPIR-V Reflector</Title>
-    <Version>0.1</Version>
+    <Version>0.1.1</Version>
     <Authors>James Yarwood</Authors>
     <Description>A library for extracting information about a shader from SPIR-V bytecode, which you can then use for anything from automating shader bindings or generating shader statistics.</Description>
     <Copyright>Copyright © 2022 James Yarwood</Copyright>
