@@ -241,6 +241,7 @@ namespace SpirvReflector
                 {
                     object enumValue = word.GetValue();
                     SpirvEnumerantDef d = _def.GetEnumDef(enumValue.GetType(), enumValue);
+
                     foreach (SpirvParameterDef pd in d.Parameters)
                         ReadWord(inst, pd.Kind, pd.Name);
                 }

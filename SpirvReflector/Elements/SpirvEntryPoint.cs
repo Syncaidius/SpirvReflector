@@ -12,6 +12,14 @@ namespace SpirvReflector
 
         List<SpirvVariable> _outputs = new List<SpirvVariable>();
 
+        public override string ToString()
+        {
+            string o = string.Join(", ", Outputs.Select(v => v.Type.Kind));
+            string i = string.Join(", ", Inputs.Select(v => v.Type.Kind));
+
+            return $"{ExecutionModel} Entry-point ({o}) = {Name}({i})";
+        }
+
         internal void AddVariable(SpirvVariable v)
         {
             if (v.StorageClass == SpirvStorageClass.Input)

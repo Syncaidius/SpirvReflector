@@ -10,7 +10,10 @@ namespace SpirvReflector
     {
         public override string ToString()
         {
-            return $"[ID: {ID}] {Type.Kind}*";
+            if(Type.Kind == SpirvTypeKind.Invalid)
+                return $"[ID: {ID}] {Type.Kind}* [[{Type.Name}]]";
+            else
+                return $"[ID: {ID}] {Type.Kind}*";
         }
         public uint ID { get; internal set; }
 

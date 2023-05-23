@@ -14,6 +14,7 @@ namespace SpirvReflector
         List<SpirvEntryPoint> _entryPoints;
         List<string> _extensions;
         List<SpirvVariable> _uniforms;
+        List<SpirvVariable> _resources;
 
         uint _bound;
 
@@ -24,6 +25,7 @@ namespace SpirvReflector
             _extensions = new List<string>();
             _entryPoints = new List<SpirvEntryPoint>();
             _uniforms = new List<SpirvVariable>();
+            _resources = new List<SpirvVariable>();
         }
 
         internal void AddCapaibility(SpirvCapability cap)
@@ -49,6 +51,11 @@ namespace SpirvReflector
         internal void AddEntryPoint(SpirvEntryPoint entryPoint)
         {
             _entryPoints.Add(entryPoint);
+        }
+
+        internal void AddResource(SpirvVariable resource)
+        {
+            _resources.Add(resource);
         }
 
         /// <summary>
@@ -106,6 +113,11 @@ namespace SpirvReflector
         /// Gets a list of uniform variables that were found in the bytecode.
         /// </summary>
         public IReadOnlyList<SpirvVariable> Uniforms => _uniforms;
+
+        /// <summary>
+        /// Gets a list of resource slot-based variables that were found in the bytecode.
+        /// </summary>
+        public IReadOnlyList<SpirvVariable> Resources => _resources;
 
         /// <summary>
         /// Gets the total number of instructions in the bytecode.

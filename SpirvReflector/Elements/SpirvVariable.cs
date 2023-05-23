@@ -14,6 +14,9 @@ namespace SpirvReflector
             string name = string.IsNullOrWhiteSpace(Name) ? "_unnamed_" : $"{Name}";
 
             string r = $"[ID: {ID}]";
+            if(Binding.HasValue)
+                r += $"[Slot: {Binding.Value}]";
+
             if(decoration.Length > 0)
                 r += $"{decoration} ";
 
@@ -37,7 +40,7 @@ namespace SpirvReflector
         /// <summary>
         /// Gets the binding slot or ID of the variable.
         /// </summary>
-        public uint Binding { get; internal set; }
+        public uint? Binding { get; internal set; }
 
         /// <summary>
         /// Gets the pointer of the variable.

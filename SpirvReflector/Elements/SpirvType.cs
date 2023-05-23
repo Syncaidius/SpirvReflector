@@ -108,6 +108,7 @@ namespace SpirvReflector
 
     public enum SpirvTypeKind
     {
+        Invalid,
         Void,
         Bool,
         Int,

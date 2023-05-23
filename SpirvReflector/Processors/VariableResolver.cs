@@ -37,6 +37,9 @@ namespace SpirvReflector
             if (v.StorageClass == SpirvStorageClass.Uniform)
                 context.Result.AddUniform(v);
 
+            if(v.StorageClass == SpirvStorageClass.Image || v.Type is SpirvImageType imgType)
+                context.Result.AddResource(v);
+
             context.AssignedElements.Add(inst.Result.Value, v);
             context.ReplaceElement(inst, v);
         }

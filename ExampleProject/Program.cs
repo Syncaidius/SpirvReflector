@@ -25,10 +25,9 @@ namespace ExampleProject
                         byteCode = reader.ReadBytes((int)stream.Length);
                 }
 
+                SpirvReflectionResult result = null;
                 fixed (byte* ptrByteCode = byteCode)
-                {
-                    SpirvReflectionResult result = reflection.Reflect(ptrByteCode, (nuint)byteCode.LongLength);
-                }
+                    result = reflection.Reflect(ptrByteCode, (nuint)byteCode.LongLength);
 
                 Console.WriteLine();
             }

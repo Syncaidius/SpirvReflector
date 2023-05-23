@@ -58,14 +58,21 @@ namespace SpirvReflector
                 throw new ArgumentException("Type must be an enum.", "enumType");
 
             string tName = enumType.Name.Replace("Spirv","");
+            SpirvEnumerantDef result = null;
+
             if(OperandKindLookup.TryGetValue(tName, out SpirvOperandKindDef okd))
             {
                 string vName = value.ToString();
-                if (okd.EnumerantLookup.TryGetValue(vName, out SpirvEnumerantDef ed))
-                    return ed;
+
+                // Try removing the type prefix from the value name.
+                if (!okd.EnumerantLookup.TryGetValue(vName, out result) && vName.StartsWith(tName))
+                {
+                    vName = vName.Replace(tName, "");
+                    okd.EnumerantLookup.TryGetValue(vName, out result);
+                }
             }
 
-            return null;
+            return result;
         }
     }
 }
