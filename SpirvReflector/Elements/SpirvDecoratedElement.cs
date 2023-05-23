@@ -16,6 +16,7 @@ namespace SpirvReflector
 
             return r;
         }
+
         public SpirvDecorationData Decorations { get; } = new SpirvDecorationData();
     }
 }

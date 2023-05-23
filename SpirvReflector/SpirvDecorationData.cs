@@ -16,7 +16,7 @@ namespace SpirvReflector
         /// <param name="decoration">The <see cref="SpirvDecoration"/>.</param>
         /// <param name="values">The list of decoration parameters.</param>
         /// <exception cref="InvalidOperationException"></exception>
-        internal void AddDecoration(SpirvDecoration decoration, List<object> values)
+        internal void Add(SpirvDecoration decoration, List<object> values)
         {
             if (_decorations.ContainsKey(decoration))
                 throw new InvalidOperationException($"The same decoration ({decoration}) cannot be added twice.");
@@ -29,7 +29,7 @@ namespace SpirvReflector
         /// </summary>
         /// <param name="decoration">The <see cref="SpirvDecoration"/>.</param>
         /// <returns></returns>
-        public bool HasDecoration(SpirvDecoration decoration)
+        public bool Has(SpirvDecoration decoration)
         {
             return _decorations.ContainsKey(decoration);
         }

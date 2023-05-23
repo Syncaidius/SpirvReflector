@@ -30,7 +30,7 @@ namespace SpirvReflector
                         if (dec == SpirvDecoration.Binding && element is SpirvVariable v)
                             v.Binding = (uint)decValues[0];
                         else
-                            element.Decorations.AddDecoration(dec, decValues);
+                            element.Decorations.Add(dec, decValues);
                     }
                     break;
 
@@ -59,7 +59,7 @@ namespace SpirvReflector
                         }
                         else
                         {
-                            parentType.Members[memberIndex].Decorations.AddDecoration(dec, decValues);
+                            parentType.Members[memberIndex].Decorations.Add(dec, decValues);
                         }
                     }
                     break;                

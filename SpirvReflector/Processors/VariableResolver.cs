@@ -37,6 +37,7 @@ namespace SpirvReflector
             if (v.StorageClass == SpirvStorageClass.Uniform)
                 context.Result.AddUniform(v);
 
+            // Check if the variable is a resource.
             if(v.StorageClass == SpirvStorageClass.Image || v.Type is SpirvImageType imgType)
                 context.Result.AddResource(v);
 
