@@ -11,26 +11,61 @@ namespace SpirvReflector
     {
         protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
         {
-            if (inst.OpCode != SpirvOpCode.OpEntryPoint)
-                return;
-
-            uint funcID = inst.GetOperandValue<uint>(1);
-            SpirvEntryPoint e = new SpirvEntryPoint()
+            switch(inst.OpCode)
             {
-                Function = context.AssignedElements[funcID] as SpirvFunction,
-                ExecutionModel = inst.GetOperandValue<SpirvExecutionModel>(0),
-                Name = inst.GetOperandString(2),
-            };
+                case SpirvOpCode.OpEntryPoint:
+                    {
+                        uint funcID = inst.GetOperandValue<uint>(1);
+                        SpirvEntryPoint ep = new SpirvEntryPoint()
+                        {
+                            Function = context.AssignedElements[funcID] as SpirvFunction,
+                            Name = inst.GetOperandString(2),
+                        };
 
-            for(int i = 3; i < inst.Operands.Count; i++)
-            {
-                uint varID = inst.GetOperandValue<uint>(i);
-                SpirvVariable v = context.AssignedElements[varID] as SpirvVariable;
-                e.AddVariable(v);
+                        for (int i = 3; i < inst.Operands.Count; i++)
+                        {
+                            uint varID = inst.GetOperandValue<uint>(i);
+                            SpirvVariable v = context.AssignedElements[varID] as SpirvVariable;
+                            ep.AddVariable(v);
+                        }
+
+                        ep.Execution.Model = inst.GetOperandValue<SpirvExecutionModel>(0);
+                        context.Result.AddEntryPoint(ep);
+                        context.ReplaceElement(inst, ep);
+                    }
+                    break;
+
+                case SpirvOpCode.OpExecutionMode:
+                    {
+                        uint epID = inst.GetOperandValue<uint>(0);
+                        SpirvBytecodeElement el = context.AssignedElements[epID];
+                        SpirvExecutionMode mode = inst.GetOperandValue<SpirvExecutionMode>(1);
+
+                        switch (el)
+                        {
+                            case SpirvEntryPoint ep:
+                                ep.Execution.Mode = mode;
+                                break;
+
+                            case SpirvFunction f:
+                                foreach (SpirvEntryPoint ep in context.Result.EntryPoints)
+                                {
+                                    if (ep.Function == f)
+                                    {
+                                        ep.Execution.Mode = mode;
+                                        break;
+                                    }
+                                }
+                                break;
+                        }
+
+                        context.Elements.Remove(inst);
+                    }
+                    break;
+
+                default:
+                    return;
             }
-
-            context.Result.AddEntryPoint(e);
-            context.ReplaceElement(inst, e);
         }
     }
 }

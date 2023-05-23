@@ -59,18 +59,6 @@ namespace SpirvReflector
                 case SpirvOpCode.OpModuleProcessed:
                     break;
 
-                /*case SpirvOpCode.OpEntryPoint:
-                    EntryPoint entry = new EntryPoint();
-                    SpirvLiteralString ep = inst.GetOperandWord<SpirvLiteralString>();
-
-                    if (ep != null)
-                    {
-                        entry.ExecutionModel = inst.GetOperand<SpirvExecutionModel>();
-                        entry.Name = ep.Value;
-                        _entryPoints.Add(entry);
-                    }
-                    break;*/
-
                 default:
                     return;
             }

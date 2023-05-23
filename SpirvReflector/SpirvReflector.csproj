@@ -19,6 +19,8 @@
     <PackageTags>spirv; spir-v; shader; bytecode; vulkan;</PackageTags>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Platforms>AnyCPU;x64</Platforms>
+    <PackageReleaseNotes>Added support for resource-based slot bindings
+Several bugfixes (see GitHub)</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
