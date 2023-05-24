@@ -19,7 +19,10 @@
     <PackageTags>spirv; spir-v; shader; bytecode; vulkan;</PackageTags>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Platforms>AnyCPU;x64</Platforms>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>• Added support for multiple, unique function execution modes
+• SpirvReflectionFlags.LogDebug flag is now used
+• Added package icon</PackageReleaseNotes>
+    <PackageIcon>icon_package.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +34,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\icon_package.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

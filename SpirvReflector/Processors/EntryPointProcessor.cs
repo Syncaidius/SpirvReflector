@@ -53,7 +53,7 @@ namespace SpirvReflector
                         switch (el)
                         {
                             case SpirvEntryPoint ep:
-                                ep.Execution.Mode = mode;
+                                ep.Execution.AddMode(mode, new List<object>());
                                 break;
 
                             case SpirvFunction f:
@@ -61,7 +61,17 @@ namespace SpirvReflector
                                 {
                                     if (ep.Function == f)
                                     {
-                                        ep.Execution.Mode = mode;
+                                        List<object> pList = new List<object>();
+                                        if(inst.Operands.Count > 2)
+                                        {
+                                            for (int i = 2; i < inst.Operands.Count; i++)
+                                            {
+                                                SpirvWord o = inst.Operands[i];
+                                                pList.Add(o.GetValue());
+                                            }
+                                        }
+
+                                        ep.Execution.AddMode(mode, pList);
                                         break;
                                     }
                                 }

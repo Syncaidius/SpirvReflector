@@ -47,7 +47,7 @@ namespace SpirvReflector
             // Build opcode lookup
             foreach (SpirvInstructionDef inst in Instructions)
             {
-                if (!OpcodeLookup.TryAdd((SpirvOpCode)inst.Opcode, inst))
+                if (!OpcodeLookup.TryAdd((SpirvOpCode)inst.Opcode, inst) && reflection.Flags.Has(SpirvReflectionFlags.LogDebug))
                     reflection.Log.WriteLine($"Skipping duplicate opcode definition: {inst.OpName} ({inst.Opcode})");
             }
         }

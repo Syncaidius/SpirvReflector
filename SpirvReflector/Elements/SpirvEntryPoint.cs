@@ -13,23 +13,32 @@ namespace SpirvReflector
         /// </summary>
         public class ExecutionInfo
         {
-            List<object> Parameters = new List<object>();
+            Dictionary<SpirvExecutionMode, List<object>> _parameters = new Dictionary<SpirvExecutionMode, List<object>>();
 
-            internal void AddParameter(object p)
+            internal void AddMode(SpirvExecutionMode mode, List<object> parameters)
             {
-                Parameters.Add(p);
+                if (!_parameters.TryGetValue(mode, out List<object> p))
+                {
+                    p = new List<object>(parameters);
+                    _parameters.Add(mode, p);
+                }
+                else
+                {
+                    p.Clear();
+                    p.AddRange(parameters);
+                }
             }
 
             /// <summary>
             /// Gets a list of extra parameters that were included with the execution mode.
             /// </summary>
             /// <returns></returns>
-            public IReadOnlyList<object> GetParameters() => Parameters; 
+            public IReadOnlyList<object> this[SpirvExecutionMode mode] => _parameters[mode];
 
             /// <summary>
-            /// Gets the execution mode.
+            /// Gets a list of available execution modes for the current entry point.
             /// </summary>
-            public SpirvExecutionMode Mode { get; internal set; }
+            public IEnumerable<SpirvExecutionMode> Modes => _parameters.Keys;
 
             /// <summary>
             /// Gets the execution model. This determines how the entry point is invoked. For example, as a vertex, geometry or tessellation shader.

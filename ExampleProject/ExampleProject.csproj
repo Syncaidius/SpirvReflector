@@ -18,13 +18,13 @@
     <None Update="gbuffer.mfx.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="gbuffer.mfx_Pixel.spirv">
+    <None Update="gbuffer.mfx_Pixel_PS.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="sprite.mfx_Geometry.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="sprite_sdf.mfx_Geometry.spirv">
+    <None Update="sprite.mfx_Geometry_GS.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
