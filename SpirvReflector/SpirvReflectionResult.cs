@@ -7,6 +7,10 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
+    /// <summary>
+    /// A reflection result which contains statistical and binding information for SPIR-V bytecode. 
+    /// <para>This could be used to automatically map application data to shader inputs and outputs.</para>
+    /// </summary>
     public class SpirvReflectionResult
     {
         List<SpirvCapability> _capabilities;

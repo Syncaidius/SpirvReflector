@@ -35,7 +35,7 @@ namespace SpirvReflector
 
         internal Dictionary<SpirvOpCode, SpirvInstructionDef> OpcodeLookup { get; } = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
 
-        internal void BuildLookups()
+        internal void BuildLookups(SpirvReflection reflection)
         {
             // Build operand-kind lookup
             foreach (SpirvOperandKindDef okd in OperandKinds)
@@ -48,7 +48,7 @@ namespace SpirvReflector
             foreach (SpirvInstructionDef inst in Instructions)
             {
                 if (!OpcodeLookup.TryAdd((SpirvOpCode)inst.Opcode, inst))
-                    Console.WriteLine($"Skipping duplicate opcode definition: {inst.OpName} ({inst.Opcode})");
+                    reflection.Log.WriteLine($"Skipping duplicate opcode definition: {inst.OpName} ({inst.Opcode})");
             }
         }
 

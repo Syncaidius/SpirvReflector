@@ -9,7 +9,11 @@ namespace ExampleProject
         static unsafe void Main(string[] args)
         {
             IReflectionLogger log = new SpirvConsoleLogger();
-            SpirvReflection reflection = new SpirvReflection(log);
+            SpirvReflection reflection = new SpirvReflection(log, 
+                SpirvReflectionFlags.LogInstructions | 
+                SpirvReflectionFlags.LogAssignments | 
+                SpirvReflectionFlags.LogResult | 
+                SpirvReflectionFlags.LogDebug);
 
             string[] spirvFiles = Directory.GetFiles(".", "*.spirv");
             foreach(string filename in spirvFiles)
@@ -25,6 +29,7 @@ namespace ExampleProject
                         byteCode = reader.ReadBytes((int)stream.Length);
                 }
 
+                // Produce a SPIR-V reflection result that we could use in our application to automatically map data to shader inputs/outputs.
                 SpirvReflectionResult result = null;
                 fixed (byte* ptrByteCode = byteCode)
                     result = reflection.Reflect(ptrByteCode, (nuint)byteCode.LongLength);

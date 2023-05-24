@@ -21,9 +21,10 @@ namespace SpirvReflector
         SpirvDef _def;
         Dictionary<Type, SpirvProcessor> _parsers;
 
-        public SpirvReflection(IReflectionLogger log)
+        public SpirvReflection(IReflectionLogger log, SpirvReflectionFlags flags)
         {
             Log = log;
+            Flags = flags;
             _parsers = new Dictionary<Type, SpirvProcessor>();
 
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
@@ -43,17 +44,17 @@ namespace SpirvReflector
                     try
                     {
                         _def = JsonConvert.DeserializeObject<SpirvDef>(json);
-                        _def.BuildLookups();
+                        _def.BuildLookups(this);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Failed to parse SPIR-V opcode definitions: {ex.Message}");
+                        Log.Error($"Failed to parse SPIR-V opcode definitions: {ex.Message}");
                     }
                 }
             }
             else
             {
-                Debug.WriteLine($"SPIR-V opcode definition file not found.");
+                Log.Error($"SPIR-V opcode definition file not found.");
             }
         }
 
@@ -121,9 +122,14 @@ namespace SpirvReflector
             Run<Decorator>(context);
             Run<EntryPointProcessor>(context);
 
-            LogInstructions(context);
-            LogAssignments(context);
-            LogElements(context);
+            if(Flags.Has(SpirvReflectionFlags.LogInstructions))
+                LogInstructions(context);
+
+            if(Flags.Has(SpirvReflectionFlags.LogAssignments))
+                LogAssignments(context);
+
+            if(Flags.Has(SpirvReflectionFlags.LogResult))
+                LogResult(context);
 
             return context.Result;
         }
@@ -157,7 +163,7 @@ namespace SpirvReflector
         /// <summary>
         /// Outputs the current list of elements to <see cref="Log"/>, if available.
         /// </summary>
-        private void LogElements(SpirvReflectContext context)
+        private void LogResult(SpirvReflectContext context)
         {
             if (Log == null)
                 return;
@@ -296,7 +302,14 @@ namespace SpirvReflector
             return t;
         }
 
-
+        /// <summary>
+        /// Gets the log that was provided when the current <see cref="SpirvReflection"/> instance was created.
+        /// </summary>
         internal IReflectionLogger Log { get; }
+
+        /// <summary>
+        /// Gets the flags that were passed in when the current <see cref="SpirvReflection"/> instance was created.
+        /// </summary>
+        public SpirvReflectionFlags Flags { get; }
     }
 }
