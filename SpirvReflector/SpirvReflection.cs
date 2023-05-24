@@ -102,7 +102,7 @@ namespace SpirvReflector
         /// <returns></returns>
         public SpirvReflectionResult Reflect(byte[] byteCode)
         {
-            fixed (void* ptr = byteCode)
+            fixed (void* ptr = &byteCode[0])
                 return Reflect(ptr, (nuint)byteCode.Length);
         }
 
