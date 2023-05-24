@@ -20,7 +20,7 @@ namespace SpirvReflector
                         {
 
                         }
-                        if (context.AssignedElements.TryGetValue(typeRefID, out SpirvBytecodeElement e))
+                        if (context.TryGetAssignedElement(typeRefID, out SpirvBytecodeElement e))
                         {
                             string name = inst.GetOperandString(1);
                             switch (e)
@@ -49,20 +49,17 @@ namespace SpirvReflector
                 case SpirvOpCode.OpMemberName:
                     {
                         uint typeRefID = inst.GetOperandValue<uint>(0);
-                        if (context.AssignedElements.TryGetValue(typeRefID, out SpirvBytecodeElement e))
+                        if (context.TryGetAssignedElement(typeRefID, out SpirvType t))
                         {
-                            if (e is SpirvType t)
+                            uint memberIndex = inst.GetOperandValue<uint>(1);
+                            if (memberIndex < t.Members.Count)
                             {
-                                uint memberIndex = inst.GetOperandValue<uint>(1);
-                                if (memberIndex < t.Members.Count)
-                                {
-                                    t.Members[(int)memberIndex].Name = inst.GetOperandString(2);
-                                }
-                                else
-                                {
-                                    context.Log.Warning($"Failed to find member with index '{memberIndex}' for OpMemberName assignment.");
-                                    return;
-                                }
+                                t.Members[(int)memberIndex].Name = inst.GetOperandString(2);
+                            }
+                            else
+                            {
+                                context.Log.Warning($"Failed to find member with index '{memberIndex}' for OpMemberName assignment.");
+                                return;
                             }
                         }
                         else

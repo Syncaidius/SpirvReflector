@@ -15,17 +15,21 @@ namespace SpirvReflector
                 return;
 
             uint pointerID = inst.GetOperandValue<uint>(0);
-            int initID = -1;
             SpirvConstant initializer = null;
+
+            if (!context.TryGetAssignedElement(pointerID, out SpirvPointer ptrType))
+            {
+                context.Log.Warning($"Failed to resolve type for variable {inst.Result.Value}.");
+                return;
+            }
 
             // Retrieve initializer, if available. This is an optional operand.
             if (inst.WordCount > 4)
             {
-                initID = (int)inst.GetOperandValue<uint>(4);
-                initializer = context.AssignedElements[(uint)initID] as SpirvConstant;
+                uint initID = inst.GetOperandValue<uint>(4);
+                context.TryGetAssignedElement(initID, out initializer);
             }
 
-            SpirvPointer ptrType = context.AssignedElements[pointerID] as SpirvPointer;
             SpirvVariable v = new SpirvVariable()
             {
                 ID = inst.Result.Value,
@@ -41,7 +45,7 @@ namespace SpirvReflector
             if(v.StorageClass == SpirvStorageClass.Image || v.Type is SpirvImageType imgType)
                 context.Result.AddResource(v);
 
-            context.AssignedElements.Add(inst.Result.Value, v);
+            context.SetAssignedElement(inst.Result.Value, v);
             context.ReplaceElement(inst, v);
         }
     }

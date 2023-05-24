@@ -29,18 +29,15 @@ namespace SpirvReflector
                     };
 
                     uint returnTypeId = inst.GetOperandValue<uint>(0);
-                    if (context.AssignedElements.TryGetValue(returnTypeId, out SpirvBytecodeElement returnType))
-                    {
-                        if(returnType is SpirvType t)
-                            _curFunc.ReturnType = t;
-                    }
+                    if (context.TryGetAssignedElement(returnTypeId, out SpirvType t))
+                        _curFunc.ReturnType = t;
 
                     // Get parameters from referenced OpTypeFunction.
                     uint funcTypeID = inst.GetOperandValue<uint>(3);
                     SpirvInstruction funcType = context.Assignments[funcTypeID];
                     ResolveFunctionType(context, funcType, _curFunc);
 
-                    context.AssignedElements.Add(_curFunc.ID, _curFunc);
+                    context.SetAssignedElement(_curFunc.ID, _curFunc);
                     context.ReplaceElement(inst, _curFunc);
                     return;
 
@@ -76,8 +73,8 @@ namespace SpirvReflector
             for (int i = 2; i < funcType.Operands.Count; i++) // Parameters start at at operand 2 in OpTypeFunction
             {
                 uint pTypeID = funcType.GetOperandValue<uint>(i);
-                SpirvType pType = context.AssignedElements[pTypeID] as SpirvType;
-                _curFunc.Parameters.Add(pType);
+                if (context.TryGetAssignedElement(pTypeID, out SpirvType pType))
+                    _curFunc.Parameters.Add(pType);
             }
 
             context.Elements.Remove(funcType);

@@ -10,6 +10,8 @@ namespace SpirvReflector
     {
         internal SpirvInstruction[] Assignments;
 
+        Dictionary<uint, SpirvBytecodeElement> _assignedElements { get; } = new Dictionary<uint, SpirvBytecodeElement>();
+
         internal SpirvReflectContext(SpirvReflection reflection)
         {
             Reflection = reflection;
@@ -22,6 +24,36 @@ namespace SpirvReflector
                 Elements[index] = replacement;
         }
 
+        internal void SetAssignedElement(uint id, SpirvBytecodeElement element)
+        {
+            _assignedElements[id] = element;
+        }
+
+        internal bool TryGetAssignedElement<T>(uint id, out T element, bool supressWarnings = false)
+            where T : SpirvBytecodeElement
+        {
+            if (_assignedElements.TryGetValue(id, out SpirvBytecodeElement e))
+            {
+                element = e as T;
+                if (element != null)
+                    return true;
+                else
+                    Log.Warning($"Found element %{id} but it was of type '{e.GetType().Name}' not '{typeof(T)}'");
+            }
+            else
+            {
+                if (!supressWarnings)
+                {
+                    Log.Warning($"Unable to find target element %{id}");
+                    if (Assignments[id] != null)
+                        Log.Warning($"\t But found matching instruction: {Assignments[id]}");
+                }
+            }
+
+            element = null;
+            return false;
+        }
+
         internal SpirvReflection Reflection { get; }
 
         internal SpirvReflectionResult Result { get; } = new SpirvReflectionResult();
@@ -29,8 +61,6 @@ namespace SpirvReflector
         internal List<SpirvInstruction> Instructions { get; } = new List<SpirvInstruction>();
 
         internal List<SpirvBytecodeElement> Elements { get; } = new List<SpirvBytecodeElement>();
-
-        internal Dictionary<uint, SpirvBytecodeElement> AssignedElements { get; } = new Dictionary<uint, SpirvBytecodeElement>();
 
         internal IReflectionLogger Log => Reflection.Log;
     }

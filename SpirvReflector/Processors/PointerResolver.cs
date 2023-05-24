@@ -15,7 +15,7 @@ namespace SpirvReflector
                 return;
 
             uint typeID = inst.GetOperandValue<uint>(2);
-            if(!context.AssignedElements.TryGetValue(typeID, out SpirvBytecodeElement eType))
+            if(!context.TryGetAssignedElement(typeID, out SpirvBytecodeElement eType))
             {
                 eType = new SpirvType()
                 {
@@ -32,7 +32,7 @@ namespace SpirvReflector
                 Type = eType as SpirvType,
             };
 
-            context.AssignedElements.Add(inst.Result.Value, e);
+            context.SetAssignedElement(inst.Result.Value, e);
             context.ReplaceElement(inst, e);
         }
     }

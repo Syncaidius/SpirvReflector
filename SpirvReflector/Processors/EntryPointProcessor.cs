@@ -16,17 +16,24 @@ namespace SpirvReflector
                 case SpirvOpCode.OpEntryPoint:
                     {
                         uint funcID = inst.GetOperandValue<uint>(1);
+                        if(!context.TryGetAssignedElement(funcID, out SpirvFunction func))
+                        {
+                            context.Log.Warning($"Failed to resolve entry point function {funcID}.");
+                            return;
+                        }
+
                         SpirvEntryPoint ep = new SpirvEntryPoint()
                         {
-                            Function = context.AssignedElements[funcID] as SpirvFunction,
+                            Function = func,
                             Name = inst.GetOperandString(2),
                         };
 
+                        // Retrieve and map entry point input/output variables.
                         for (int i = 3; i < inst.Operands.Count; i++)
                         {
                             uint varID = inst.GetOperandValue<uint>(i);
-                            SpirvVariable v = context.AssignedElements[varID] as SpirvVariable;
-                            ep.AddVariable(v);
+                            if(context.TryGetAssignedElement(varID, out SpirvVariable v))
+                                ep.AddVariable(v);
                         }
 
                         ep.Execution.Model = inst.GetOperandValue<SpirvExecutionModel>(0);
@@ -38,7 +45,9 @@ namespace SpirvReflector
                 case SpirvOpCode.OpExecutionMode:
                     {
                         uint epID = inst.GetOperandValue<uint>(0);
-                        SpirvBytecodeElement el = context.AssignedElements[epID];
+                        if (!context.TryGetAssignedElement(epID, out SpirvBytecodeElement el))
+                            context.Log.Warning($"Failed to retrieve target '{epID}' for execution mode.");
+
                         SpirvExecutionMode mode = inst.GetOperandValue<SpirvExecutionMode>(1);
 
                         switch (el)

@@ -11,7 +11,7 @@ namespace SpirvReflector
     {
         protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
         {
-            if (inst.Result == null)
+            if (inst.Result == null || !inst.OpCode.ToString().StartsWith("OpType"))
                 return;
 
             ResolveType(inst.Result.Value, context);
@@ -19,7 +19,7 @@ namespace SpirvReflector
 
         private SpirvType ResolveType(uint refID, SpirvReflectContext context)
         {
-            if (!context.AssignedElements.TryGetValue(refID, out SpirvBytecodeElement e))
+            if (!context.TryGetAssignedElement(refID, out SpirvBytecodeElement e, true))
             {
                 SpirvInstruction inst = context.Assignments[refID];
                 SpirvType t = null;
@@ -28,9 +28,11 @@ namespace SpirvReflector
                 {
                     case SpirvOpCode.OpTypeImage:
                         uint sampledTypeID = inst.GetOperandValue<uint>(1);
+                        context.TryGetAssignedElement(sampledTypeID, out SpirvType sampledType);
+
                         SpirvImageType it = new SpirvImageType()
                         {
-                            ElementType = context.AssignedElements[sampledTypeID] as SpirvType,
+                            ElementType = sampledType,
                             Dimension = inst.GetOperandValue<SpirvDim>(2),
                             Depth = (SpirvImageDepthMode)inst.GetOperandValue<uint>(3),
                             IsArrayed = inst.GetOperandValue<uint>(4) == 1,
@@ -126,7 +128,7 @@ namespace SpirvReflector
 
                 e = t;
                 t.ID = refID;
-                context.AssignedElements.Add(refID, t);
+                context.SetAssignedElement(refID, t);
                 context.ReplaceElement(inst, t);
             }
 

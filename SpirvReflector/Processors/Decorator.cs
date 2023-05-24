@@ -26,11 +26,13 @@ namespace SpirvReflector
                         }
 
                         // Check if we're applying a binding/slot ID.
-                        SpirvDecoratedElement element = context.AssignedElements[targetID] as SpirvDecoratedElement;
-                        if (dec == SpirvDecoration.Binding && element is SpirvVariable v)
-                            v.Binding = (uint)decValues[0];
-                        else
-                            element.Decorations.Add(dec, decValues);
+                        if(context.TryGetAssignedElement(targetID, out SpirvBytecodeElement e))
+                        {
+                            if (dec == SpirvDecoration.Binding && e is SpirvVariable v)
+                                v.Binding = (uint)decValues[0];
+                            else if(e is SpirvDecoratedElement de)
+                                de.Decorations.Add(dec, decValues);
+                        }
                     }
                     break;
 
@@ -45,21 +47,18 @@ namespace SpirvReflector
                             SpirvWord w = inst.Operands[i];
                             decValues.Add(w.GetValue());
                         }
-                        SpirvType parentType = context.AssignedElements[targetID] as SpirvType;
-                        if (parentType == null)
-                        {
-                            context.Log.Warning($"Member decoration on non-type [{targetID}].");
-                            return;
-                        }
 
-                        if (dec == SpirvDecoration.Offset)
+                        if (context.TryGetAssignedElement(targetID, out SpirvType parentType))
                         {
-                            uint offset = (uint)decValues[0];
-                            parentType.Members[memberIndex].ByteOffset = offset;
-                        }
-                        else
-                        {
-                            parentType.Members[memberIndex].Decorations.Add(dec, decValues);
+                            if (dec == SpirvDecoration.Offset)
+                            {
+                                uint offset = (uint)decValues[0];
+                                parentType.Members[memberIndex].ByteOffset = offset;
+                            }
+                            else
+                            {
+                                parentType.Members[memberIndex].Decorations.Add(dec, decValues);
+                            }
                         }
                     }
                     break;                
