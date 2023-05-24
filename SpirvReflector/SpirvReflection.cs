@@ -16,7 +16,7 @@ namespace SpirvReflector
     /// <para>Main specification: https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html#_magic_number</para>
     /// <para>Physical/Data layout: https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html#PhysicalLayout</para>
     /// </remarks>
-    public unsafe class SpirvReflection
+    public class SpirvReflection
     {
         SpirvDef _def;
         Dictionary<Type, SpirvProcessor> _parsers;
@@ -102,8 +102,11 @@ namespace SpirvReflector
         /// <returns></returns>
         public SpirvReflectionResult Reflect(byte[] byteCode)
         {
-            fixed (void* ptr = &byteCode[0])
-                return Reflect(ptr, (nuint)byteCode.Length);
+            unsafe
+            {
+                fixed (void* ptr = &byteCode[0])
+                    return Reflect(ptr, (nuint)byteCode.Length);
+            }
         }
 
         /// <summary>
@@ -112,7 +115,7 @@ namespace SpirvReflector
         /// <param name="byteCode">A pointer to SPIR-V bytecode.</param>
         /// <param name="numBytes">The number of bytes in the bytecode.</param>
         /// <returns></returns>
-        public SpirvReflectionResult Reflect(void* byteCode, nuint numBytes)
+        public unsafe SpirvReflectionResult Reflect(void* byteCode, nuint numBytes)
         {
             SpirvReflectContext context = new SpirvReflectContext(this);
             SpirvStream stream = new SpirvStream(byteCode, numBytes);

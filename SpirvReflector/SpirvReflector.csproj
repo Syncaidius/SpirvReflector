@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>SPIR-V Reflector</Title>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>James Yarwood</Authors>
     <Description>A library for extracting information about a shader from SPIR-V bytecode, which you can then use for anything from automating shader bindings or generating shader statistics.</Description>
     <Copyright>Copyright © 2022 James Yarwood</Copyright>
@@ -19,9 +19,7 @@
     <PackageTags>spirv; spir-v; shader; bytecode; vulkan;</PackageTags>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Platforms>AnyCPU;x64</Platforms>
-    <PackageReleaseNotes>Improved error handling
-Better control over log output via the use of flags
-Added Reflect(byte[]) overload</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
