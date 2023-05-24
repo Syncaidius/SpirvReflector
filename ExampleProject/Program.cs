@@ -8,6 +8,7 @@ namespace ExampleProject
     {
         static unsafe void Main(string[] args)
         {
+            // Initialize a logger and SpirvReflection instance. A single instance can safely be used to reflect multiple SPIR-V bytecode files and is thread-safe.
             IReflectionLogger log = new SpirvConsoleLogger();
             SpirvReflection reflection = new SpirvReflection(log, 
                 SpirvReflectionFlags.LogInstructions | 
@@ -15,6 +16,7 @@ namespace ExampleProject
                 SpirvReflectionFlags.LogResult | 
                 SpirvReflectionFlags.LogDebug);
 
+            // Load each .spirv bytecode file in the current directory and run SpirvReflection.Reflect() on it.
             string[] spirvFiles = Directory.GetFiles(".", "*.spirv");
             foreach(string filename in spirvFiles)
             {

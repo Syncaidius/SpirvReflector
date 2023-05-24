@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SpirvReflector
 {
+    /// <summary>
+    /// A basic implementation of <see cref="IReflectionLogger"/> that writes to the console.
+    /// </summary>
     public class SpirvConsoleLogger : IReflectionLogger
     {
         public SpirvConsoleLogger()

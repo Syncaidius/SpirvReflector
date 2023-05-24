@@ -58,14 +58,10 @@ namespace SpirvReflector
             }
         }
 
-        internal void Run<T>(SpirvReflectContext context)
+        private void Run<T>(SpirvReflectContext context)
                 where T : SpirvProcessor, new()
         {
-            Run(typeof(T), context);
-        }
-
-        internal void Run(Type pType, SpirvReflectContext context)
-        {
+            Type pType = typeof(T);
             if (!typeof(SpirvProcessor).IsAssignableFrom(pType))
                 throw new InvalidOperationException($"The provided parser type must be a derivative of {nameof(SpirvProcessor)}");
 
@@ -99,6 +95,23 @@ namespace SpirvReflector
             return stream;
         }
 
+        /// <summary>
+        /// Processes the provided SPIR-V bytecode and returns a <see cref="SpirvReflectionResult"/> containing the results of the reflection process.
+        /// </summary>
+        /// <param name="byteCode">A an array of bytes which make up valid SPIR-V bytecode.</param>
+        /// <returns></returns>
+        public SpirvReflectionResult Reflect(byte[] byteCode)
+        {
+            fixed (void* ptr = byteCode)
+                return Reflect(ptr, (nuint)byteCode.Length);
+        }
+
+        /// <summary>
+        /// Processes the provided SPIR-V bytecode and returns a <see cref="SpirvReflectionResult"/> containing the results of the reflection process.
+        /// </summary>
+        /// <param name="byteCode">A pointer to SPIR-V bytecode.</param>
+        /// <param name="numBytes">The number of bytes in the bytecode.</param>
+        /// <returns></returns>
         public SpirvReflectionResult Reflect(void* byteCode, nuint numBytes)
         {
             SpirvReflectContext context = new SpirvReflectContext(this);
