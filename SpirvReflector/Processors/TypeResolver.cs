@@ -121,6 +121,12 @@ namespace SpirvReflector
                             t.Kind = SpirvTypeKind.SampledImage;
                             break;
 
+                        case SpirvOpCode.OpTypeRuntimeArray:
+                            t.Kind = SpirvTypeKind.RuntimeArray;
+                            uint elementType = inst.GetOperandValue<uint>(1);
+                            t.ElementType = ResolveType(elementType, context);
+                            break;
+
                         default:
                             return t;
                     }

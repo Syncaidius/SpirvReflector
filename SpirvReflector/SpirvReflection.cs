@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Linq;
 using Newtonsoft.Json;
 
 namespace SpirvReflector
@@ -131,6 +129,7 @@ namespace SpirvReflector
 
             Run<InitialProcessor>(context);
             Run<TypeResolver>(context);
+            Run<ConstantResolver>(context);
             Run<FunctionResolver>(context);
             Run<PointerResolver>(context);
             Run<VariableResolver>(context);

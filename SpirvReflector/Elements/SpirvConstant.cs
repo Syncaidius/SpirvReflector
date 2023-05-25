@@ -10,13 +10,13 @@ namespace SpirvReflector
     {
         public override string ToString()
         {
-            return $"{Type.Kind}*({ID})";
+            return $"[ID: {ID}] Constant {Type.Kind} = {Value}";
         }
 
         public uint ID { get; internal set; }
 
         public SpirvType Type { get; internal set; }
 
-        public SpirvWord Value { get; internal set; }
+        public object Value { get; internal set; }
     }
 }
