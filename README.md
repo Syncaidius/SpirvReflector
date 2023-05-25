@@ -1,3 +1,5 @@
+<p align="center"><img src="icon.png"/></p>
+
 # SpirvReflector
 Provides binding and statistical information about SPIR-V shader bytecode, which could be used for anything from automatic shader pipeline bindings to debug/analysis capability.
 
