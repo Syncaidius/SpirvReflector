@@ -57,6 +57,7 @@ namespace SpirvReflector
                                 break;
 
                             case SpirvFunction f:
+                                // Find the entry point that references the function, since OpExecutionMode can only be applied to entry points.
                                 foreach (SpirvEntryPoint ep in context.Result.EntryPoints)
                                 {
                                     if (ep.Function == f)

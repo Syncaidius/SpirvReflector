@@ -55,7 +55,14 @@ namespace SpirvReflector
             string o = string.Join(", ", Outputs.Select(v => v.Type.Kind));
             string i = string.Join(", ", Inputs.Select(v => v.Type.Kind));
 
-            return $"{Execution.Model} Entry-point ({o}) = {Name}({i})";
+            string execModes = string.Join(", ", Execution.Modes.Select((m) =>
+            {
+                if (Execution[m].Count > 0)
+                    return $"[{m}({string.Join(", ", Execution[m])})]";
+                else
+                    return $"[{m}]";
+            }));
+            return $"{execModes}\n{Execution.Model} Entry-point ({o}) = {Name}({i})";
         }
 
         internal void AddVariable(SpirvVariable v)

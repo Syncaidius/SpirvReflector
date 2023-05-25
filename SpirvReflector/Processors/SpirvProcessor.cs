@@ -10,9 +10,8 @@ namespace SpirvReflector
     internal abstract class SpirvProcessor
     {
         /// <summary>
-        /// Invoked during a 
+        /// 
         /// </summary>
-        /// <param name="reflection"></param>
         /// <param name="context"></param>
         internal void Process(SpirvReflectContext context)
         {

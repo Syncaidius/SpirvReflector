@@ -20,12 +20,9 @@ namespace SpirvReflector
                 SpirvConstant c = new SpirvConstant()
                 {
                     ID = inst.Result.Value,
-                    Type = type
+                    Type = type,
+                    Value = ResolveConstantValue(inst, type),
                 };
-
-                SpirvWord literal = inst.Operands[2];
-                Type t = literal.GetType();
-                c.Value = literal.GetValue();
 
                 context.SetAssignedElement(inst.Result.Value, c);
                 context.ReplaceElement(inst, c);
@@ -34,6 +31,36 @@ namespace SpirvReflector
             {
                 context.Log.Error($"Could not find type {typeID} for OpConstant {inst.Result}.");
             }
+        }
+
+        private unsafe object ResolveConstantValue(SpirvInstruction inst, SpirvType type)
+        {
+            uint width = type.NumBytes * 8;
+            SpirvLiteralInteger literal = inst.Operands[2] as SpirvLiteralInteger;
+
+            if (inst.UnreadWordCount > 0)
+            {
+                // Number is larger than 32-bit
+                throw new NotImplementedException("Support for larger than 32-bit constants is not implemented yet.");
+            }
+            else
+            {
+                uint value = literal.Value;
+                switch (type.Kind)
+                {
+                    case SpirvTypeKind.Int:
+                        return *(int*)&value;
+
+                    default:
+                    case SpirvTypeKind.UInt:
+                        return value;
+
+                    case SpirvTypeKind.Float:
+                        return *(float*)&value;
+                }
+            }
+
+            return null;
         }
     }
 }

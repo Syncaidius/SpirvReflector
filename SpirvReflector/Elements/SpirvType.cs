@@ -36,7 +36,7 @@ namespace SpirvReflector
             }
             else
             {
-                string elType = ElementType == null ? "" : $" -- Element: [{ElementType}]";
+                string elType = ElementType == null ? "" : $" -- Element: [{ElementType.Kind} {ElementType.Name} -- Bytes: {ElementType.NumBytes}]";
                 return $"Type({ID}) - {Kind} -- Length: {Length} -- Bytes: {NumBytes}{elType}";
             }
         }
