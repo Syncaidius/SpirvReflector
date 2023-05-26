@@ -19,10 +19,9 @@ namespace SpirvReflector
         SpirvDef _def;
         Dictionary<Type, SpirvProcessor> _parsers;
 
-        public SpirvReflection(IReflectionLogger log, SpirvReflectionFlags flags)
+        public SpirvReflection(IReflectionLogger log)
         {
             Log = log;
-            Flags = flags;
             _parsers = new Dictionary<Type, SpirvProcessor>();
 
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
@@ -97,13 +96,14 @@ namespace SpirvReflector
         /// Processes the provided SPIR-V bytecode and returns a <see cref="SpirvReflectionResult"/> containing the results of the reflection process.
         /// </summary>
         /// <param name="byteCode">A an array of bytes which make up valid SPIR-V bytecode.</param>
+        /// <param name="flags">Flags to control what the current <see cref="Reflect(byte[], SpirvReflectionFlags)"/> call will output.</param>
         /// <returns></returns>
-        public SpirvReflectionResult Reflect(byte[] byteCode)
+        public SpirvReflectionResult Reflect(byte[] byteCode, SpirvReflectionFlags flags)
         {
             unsafe
             {
                 fixed (void* ptr = &byteCode[0])
-                    return Reflect(ptr, (nuint)byteCode.Length);
+                    return Reflect(ptr, (nuint)byteCode.Length, flags);
             }
         }
 
@@ -112,10 +112,11 @@ namespace SpirvReflector
         /// </summary>
         /// <param name="byteCode">A pointer to SPIR-V bytecode.</param>
         /// <param name="numBytes">The number of bytes in the bytecode.</param>
+        /// <param name="flags">Flags to control what the current <see cref="Reflect(void*, nuint, SpirvReflectionFlags)"/> call will output.</param>
         /// <returns></returns>
-        public unsafe SpirvReflectionResult Reflect(void* byteCode, nuint numBytes)
+        public unsafe SpirvReflectionResult Reflect(void* byteCode, nuint numBytes, SpirvReflectionFlags flags)
         {
-            SpirvReflectContext context = new SpirvReflectContext(this);
+            SpirvReflectContext context = new SpirvReflectContext(this, flags);
             SpirvStream stream = new SpirvStream(byteCode, numBytes);
 
             context.Result.Version = (SpirvVersion)stream.ReadWord();
@@ -137,14 +138,17 @@ namespace SpirvReflector
             Run<Decorator>(context);
             Run<EntryPointProcessor>(context);
 
-            if(Flags.Has(SpirvReflectionFlags.LogInstructions))
+            if(context.Flags.Has(SpirvReflectionFlags.LogInstructions))
                 LogInstructions(context);
 
-            if(Flags.Has(SpirvReflectionFlags.LogAssignments))
+            if(context.Flags.Has(SpirvReflectionFlags.LogAssignments))
                 LogAssignments(context);
 
-            if(Flags.Has(SpirvReflectionFlags.LogResult))
+            if(context.Flags.Has(SpirvReflectionFlags.LogResult))
                 LogResult(context);
+
+            if(context.Flags.Has(SpirvReflectionFlags.Instructions))
+                context.Result.SetInstructions(context.Instructions);
 
             return context.Result;
         }
@@ -323,10 +327,5 @@ namespace SpirvReflector
         /// Gets the log that was provided when the current <see cref="SpirvReflection"/> instance was created.
         /// </summary>
         internal IReflectionLogger Log { get; }
-
-        /// <summary>
-        /// Gets the flags that were passed in when the current <see cref="SpirvReflection"/> instance was created.
-        /// </summary>
-        public SpirvReflectionFlags Flags { get; }
     }
 }

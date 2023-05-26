@@ -21,11 +21,14 @@
     <None Update="sprite.mfx_Geometry.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="sprite.mfx_Geometry_GS_1_1.spirv">
+    <None Update="sprite.mfx_Geometry_GS_1_1_dxc_reflection.spirv">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="sprite.mfx_Geometry_GS_1_1_no_reflection.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="sprite.mfx_Geometry_GS_1_2.spirv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="sprite.mfx_Geometry_GS_1_2_dxc_reflection.spirv">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

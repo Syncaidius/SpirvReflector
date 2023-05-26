@@ -10,11 +10,13 @@ namespace ExampleProject
         {
             // Initialize a logger and SpirvReflection instance. A single instance can safely be used to reflect multiple SPIR-V bytecode files and is thread-safe.
             IReflectionLogger log = new SpirvConsoleLogger();
-            SpirvReflection reflection = new SpirvReflection(log, 
-                SpirvReflectionFlags.LogInstructions | 
-                SpirvReflectionFlags.LogAssignments | 
-                SpirvReflectionFlags.LogResult | 
-                SpirvReflectionFlags.LogDebug);
+            SpirvReflectionFlags flags = SpirvReflectionFlags.LogInstructions |
+                SpirvReflectionFlags.LogAssignments |
+                SpirvReflectionFlags.LogResult |
+                SpirvReflectionFlags.LogDebug |
+                SpirvReflectionFlags.Instructions;
+
+            SpirvReflection reflection = new SpirvReflection(log);
 
             // Load each .spirv bytecode file in the current directory and run SpirvReflection.Reflect() on it.
             string[] spirvFiles = Directory.GetFiles(".", "*.spirv");
@@ -31,12 +33,8 @@ namespace ExampleProject
                         byteCode = reader.ReadBytes((int)stream.Length);
                 }
 
-                // Produce a SPIR-V reflection result that we could use in our application to automatically map data to shader inputs/outputs.
-                SpirvReflectionResult result = null;
-                fixed (byte* ptrByteCode = byteCode)
-                    result = reflection.Reflect(ptrByteCode, (nuint)byteCode.LongLength);
-
-                Console.WriteLine();
+                SpirvReflectionResult result = reflection.Reflect(byteCode, flags);
+                Console.WriteLine("--------------------------------------------------");
             }
 
             log.WriteLine("Press any key to exit...");

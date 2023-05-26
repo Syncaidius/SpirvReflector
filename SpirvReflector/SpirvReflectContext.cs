@@ -12,9 +12,10 @@ namespace SpirvReflector
 
         Dictionary<uint, SpirvBytecodeElement> _assignedElements { get; } = new Dictionary<uint, SpirvBytecodeElement>();
 
-        internal SpirvReflectContext(SpirvReflection reflection)
+        internal SpirvReflectContext(SpirvReflection reflection, SpirvReflectionFlags flags)
         {
             Reflection = reflection;
+            Flags = flags;
         }
 
         internal void ReplaceElement(SpirvBytecodeElement element, SpirvBytecodeElement replacement)
@@ -61,6 +62,12 @@ namespace SpirvReflector
         internal List<SpirvInstruction> Instructions { get; } = new List<SpirvInstruction>();
 
         internal List<SpirvBytecodeElement> Elements { get; } = new List<SpirvBytecodeElement>();
+
+        /// <summary>
+        /// Gets the flags that were passed in during the associated <see cref="SpirvReflection.Reflect(byte[], SpirvReflectionFlags)"/> or 
+        /// <see cref="SpirvReflection.Reflect(void*, nuint, SpirvReflectionFlags)"/> call.
+        /// </summary>
+        internal SpirvReflectionFlags Flags { get; }
 
         internal IReflectionLogger Log => Reflection.Log;
     }

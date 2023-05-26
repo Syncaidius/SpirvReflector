@@ -33,6 +33,11 @@ namespace SpirvReflector
         /// The final processed elements are output to the provided <see cref="IReflectionLogger"/>.
         /// </summary>
         LogResult = 1 << 3,
+
+        /// <summary>
+        /// The returned <see cref="SpirvReflectionResult"/> will be populated with the instructions that were read from the bytecode.
+        /// </summary>
+        Instructions = 1 << 4,
     }
 
     public static class SpirvReflectionFlagsExtension
