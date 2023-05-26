@@ -59,8 +59,6 @@ namespace SpirvReflector
                         return *(float*)&value;
                 }
             }
-
-            return null;
         }
     }
 }

@@ -189,9 +189,11 @@ namespace SpirvReflector
             string entryPoints = string.Join(", ", context.Result.EntryPoints.Select(e => e.Name));
 
             Log.WriteLine("\nProcessed:", ConsoleColor.Green);
+            Log.WriteLabeled("SPIR-V Version", context.Result.Version.ToString());
             Log.WriteLabeled("Capabilities", $"{caps}");
             Log.WriteLabeled("Extensions", $"{exts}");
             Log.WriteLabeled("Sources", $"{sources}");
+            Log.WriteLabeled("Instructions", context.Instructions.Count.ToString());
             Log.WriteLabeled("Memory Model", $"{context.Result.AddressingModel} -- {context.Result.MemoryModel}");
             Log.WriteLabeled("Entry Point(s)", $"{entryPoints}");
 

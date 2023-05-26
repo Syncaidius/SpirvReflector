@@ -65,14 +65,14 @@ namespace SpirvReflector
             return $"{execModes}\n{Execution.Model} Entry-point ({o}) = {Name}({i})";
         }
 
-        internal void AddVariable(SpirvVariable v)
+        internal void AddInput(SpirvVariable v)
         {
-            if (v.StorageClass == SpirvStorageClass.Input)
-                _inputs.Add(v);
-            else if(v.StorageClass == SpirvStorageClass.Output)
-                _outputs.Add(v);
-            else
-                throw new InvalidOperationException($"Cannot add non-input/output variables to entry point. Variable '{v.Name}' has storage class {v.StorageClass}.");
+            _inputs.Add(v);
+        }
+
+        internal void AddOutput(SpirvVariable v)
+        {
+            _outputs.Add(v);
         }
 
         /// <summary>

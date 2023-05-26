@@ -32,8 +32,23 @@ namespace SpirvReflector
                         for (int i = 3; i < inst.Operands.Count; i++)
                         {
                             uint varID = inst.GetOperandValue<uint>(i);
-                            if(context.TryGetAssignedElement(varID, out SpirvVariable v))
-                                ep.AddVariable(v);
+                            if (context.TryGetAssignedElement(varID, out SpirvVariable v))
+                            {
+                                switch (v.StorageClass)
+                                {
+                                    case SpirvStorageClass.Input:
+                                        ep.AddInput(v);
+                                        break;
+
+                                    case SpirvStorageClass.Output:
+                                        ep.AddOutput(v);
+                                        break;
+
+                                    default:
+                                        context.Log.Warning($"Unsupported entry point variable '{v.Name}' with storage class '{v.StorageClass}'.");
+                                        break;
+                                }
+                            }
                         }
 
                         ep.Execution.Model = inst.GetOperandValue<SpirvExecutionModel>(0);
