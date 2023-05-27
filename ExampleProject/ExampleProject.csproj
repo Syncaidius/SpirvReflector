@@ -8,6 +8,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Platforms>AnyCPU;x64</Platforms>
+    <PackageReleaseNotes>Added support for 32-bit constant values
+Added support for outputting instruction information
+Fixed crash when parsing SPIR-V 1.5 bytecode</PackageReleaseNotes>
+    <Version />
   </PropertyGroup>
 
   <ItemGroup>
