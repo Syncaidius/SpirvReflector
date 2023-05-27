@@ -12,7 +12,13 @@ namespace SpirvReflector
         {
             string r = "";
             foreach (SpirvDecoration dec in Decorations.Keys)
-                r += $"[{dec}]";
+            {
+                string p = string.Join(", ", Decorations[dec].Select(x => x.ToString()));
+                if (p.Length > 0)
+                    p = ":" + p;
+
+                r += $"[{dec}{p}]";
+            }
 
             return r;
         }

@@ -16,7 +16,7 @@
     // SPIR-V grammar file downloads
     Dictionary<string, string> downloads = new Dictionary<string, string>()
     {
-        ["Spirv"] = "spirv.core.grammar.json"
+        ["Spirv"] = "spirv.core.grammar.json",
     };
 
     foreach(string prefix in downloads.Keys)

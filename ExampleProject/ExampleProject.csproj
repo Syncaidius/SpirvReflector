@@ -23,13 +23,16 @@
     <None Update="sprite.mfx_Geometry.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="sprite.mfx_Geometry_GS_1_1_dxc_reflection.spirv">
+    <None Update="sprite.mfx_Geometry_GS.spirv">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="sprite.mfx_Geometry_GS_1_1_no_reflection.spirv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="sprite.mfx_Geometry_GS_1_2_dxc_reflection.spirv">
+    <None Update="sprite.mfx_Pixel_PS.spirv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="sprite.mfx_Vertex_VS.spirv">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
