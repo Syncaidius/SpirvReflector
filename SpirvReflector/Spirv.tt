@@ -17,6 +17,8 @@
     Dictionary<string, string> downloads = new Dictionary<string, string>()
     {
         ["Spirv"] = "spirv.core.grammar.json",
+        ["ExtGlsl450"] = "extinst.glsl.std.450.grammar.json",
+        ["Ext"] = "extinst.debuginfo.grammar.json",
     };
 
     foreach(string prefix in downloads.Keys)
