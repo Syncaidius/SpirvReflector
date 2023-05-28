@@ -102,6 +102,10 @@ namespace SpirvReflector
         {
             string decoration = base.ToString();
             string name = string.IsNullOrWhiteSpace(Name) ? "" : $" {Name}";
+
+            if (Type.Kind == SpirvTypeKind.RuntimeArray || Type.Kind == SpirvTypeKind.Array)
+                name = Type.ElementType == null ? name : $" {Type.ElementType.Name}[]";
+
             return $"{decoration}{Type.Kind}{name} -- Offset: {ByteOffset} -- Bytes: {Type.NumBytes}";
         }
     }

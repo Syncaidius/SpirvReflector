@@ -20,7 +20,11 @@ namespace SpirvReflector
             if(decoration.Length > 0)
                 r += $"{decoration} ";
 
-            r += $"{Type.Kind}* {name}";
+            if (Type.Kind == SpirvTypeKind.Struct)
+                r += $"{Type.Name}* {name}";
+            else
+                r += $"{Type.Kind}* {name}";
+
             if(DefaultValue != null)
                 r += $" = {DefaultValue}";
 

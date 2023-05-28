@@ -12,6 +12,8 @@ namespace SpirvReflector
         {
             if(Type.Kind == SpirvTypeKind.Invalid)
                 return $"[ID: {ID}] {Type.Kind}* [[{Type.Name}]]";
+            else if (Type.Kind == SpirvTypeKind.Struct)
+                return $"[ID: {ID}] {(Type.Name ?? Type.Kind.ToString())}*";
             else
                 return $"[ID: {ID}] {Type.Kind}*";
         }
