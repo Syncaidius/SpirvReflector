@@ -15,18 +15,46 @@ namespace SpirvReflector
 
             if (TryResolveBuffer(context, v))
                 return;
+
+            if (TryResolveConstantBuffer(context, v))
+                return;
+        }
+
+        private bool TryResolveConstantBuffer(SpirvReflectContext context, SpirvVariable v)
+        {
+            if (v.Type.Kind != SpirvTypeKind.Struct)
+                return false;
+
+            if(v.Type.Decorations.Has(SpirvDecoration.Block) || v.Type.Name == $"type.$Globals")
+            {
+                context.Result.AddResource(v);
+                v.HlslEquivalent = SpirvHlslEquivalent.ConstantBuffer;
+                return true;
+            }
+
+            return false;
         }
 
         private bool TryResolveBuffer(SpirvReflectContext context, SpirvVariable v)
         {
             if (v.Type.Kind == SpirvTypeKind.Struct)
+                return false;
+
+            if (v.Type.Decorations.Has(SpirvDecoration.BufferBlock) || 
+                (v.Type.Name != null && v.Type.Name.StartsWith("type.StructuredBuffer")))
             {
-                if (v.Type.Decorations.Has(SpirvDecoration.BufferBlock) || v.Type.Name.StartsWith("type.StructuredBuffer"))
+                context.Result.AddResource(v);
+
+                // Determine structured buffer type
+                if (v.Type.Members.Count > 0)
                 {
-                    context.Result.AddResource(v);
-                    v.HlslEquivalent = SpirvHlslEquivalent.StructuredBuffer;
-                    return true;
+                    if (v.Type.Members[0].Decorations.Has(SpirvDecoration.NonWritable))
+                        v.HlslEquivalent = SpirvHlslEquivalent.StructuredBuffer;
+                    else
+                        v.HlslEquivalent = SpirvHlslEquivalent.RWStructuredBuffer;
                 }
+
+                return true;
             }
 
             return false;
