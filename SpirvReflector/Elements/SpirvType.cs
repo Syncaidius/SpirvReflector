@@ -109,36 +109,4 @@ namespace SpirvReflector
             return $"{decoration}{Type.Kind}{name} -- Offset: {ByteOffset} -- Bytes: {Type.NumBytes}";
         }
     }
-
-    public enum SpirvTypeKind
-    {
-        Invalid,
-        Void,
-        Bool,
-        Int,
-        UInt,
-        Float,
-        Vector,
-        Matrix,
-        Image,
-        Sampler,
-        SampledImage,
-        Array,
-        RuntimeArray,
-        Struct,
-        Opaque,
-        Pointer,
-        Function,
-        Event,
-        DeviceEvent,
-        ReserveId,
-        Queue,
-        Pipe,
-        ForwardPointer,
-        PipeStorage,
-        NamedBarrier,
-        AccelerationStructure,
-        RayQuery,
-        Max,
-    }
 }
