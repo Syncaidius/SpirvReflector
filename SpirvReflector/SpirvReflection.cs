@@ -94,10 +94,34 @@ namespace SpirvReflector
 
         /// <summary>
         /// Processes the provided SPIR-V bytecode and returns a <see cref="SpirvReflectionResult"/> containing the results of the reflection process.
+        /// <para><example>
+        /// The following example shows how to use the <see cref="Reflect(byte[], SpirvReflectionFlags)"/> method to reflect a SPIR-V shader.
+        /// <code>
+        /// IReflectionLogger log = new SpirvConsoleLogger();
+        /// SpirvReflectionFlags flags = SpirvReflectionFlags.LogInstructions | 
+        /// SpirvReflectionFlags.LogAssignments |
+        /// SpirvReflectionFlags.LogResult |
+        /// SpirvReflectionFlags.LogDebug |
+        /// SpirvReflectionFlags.Instructions;
+        /// 
+        /// SpirvReflection reflection = new SpirvReflection(log);
+        /// 
+        /// byte[] byteCode = null;
+        /// using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+        /// {
+        ///     using (BinaryReader reader = new BinaryReader(stream))
+        ///         byteCode = reader.ReadBytes((int) stream.Length);
+        /// }
+        ///
+        /// SpirvReflectionResult result = reflection.Reflect(byteCode, flags);
+        /// </code>
+        /// </example>
+        /// </para>
         /// </summary>
         /// <param name="byteCode">A an array of bytes which make up valid SPIR-V bytecode.</param>
         /// <param name="flags">Flags to control what the current <see cref="Reflect(byte[], SpirvReflectionFlags)"/> call will output.</param>
         /// <returns></returns>
+        /// 
         public SpirvReflectionResult Reflect(byte[] byteCode, SpirvReflectionFlags flags)
         {
             unsafe
@@ -109,6 +133,31 @@ namespace SpirvReflector
 
         /// <summary>
         /// Processes the provided SPIR-V bytecode and returns a <see cref="SpirvReflectionResult"/> containing the results of the reflection process.
+        /// <para><example>
+        /// The following example shows how to use the <see cref="Reflect(byte[], SpirvReflectionFlags)"/> method to reflect a SPIR-V shader.
+        /// <code>
+        /// IReflectionLogger log = new SpirvConsoleLogger();
+        /// SpirvReflectionFlags flags = SpirvReflectionFlags.LogInstructions | 
+        /// SpirvReflectionFlags.LogAssignments |
+        /// SpirvReflectionFlags.LogResult |
+        /// SpirvReflectionFlags.LogDebug |
+        /// SpirvReflectionFlags.Instructions;
+        /// 
+        /// SpirvReflection reflection = new SpirvReflection(log);
+        /// 
+        /// byte[] byteCode = null;
+        /// using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+        /// {
+        ///     using (BinaryReader reader = new BinaryReader(stream))
+        ///         byteCode = reader.ReadBytes((int) stream.Length);
+        /// }
+        ///
+        /// SpirvReflectionResult result;
+        /// fixed (byte* ptrByteCode = &amp;byteCode[0])
+        ///     result = reflection.Reflect(ptrByteCode, (nuint)byteCode.Length, flags);
+        /// </code>
+        /// </example>
+        /// </para>
         /// </summary>
         /// <param name="byteCode">A pointer to SPIR-V bytecode.</param>
         /// <param name="numBytes">The number of bytes in the bytecode.</param>
