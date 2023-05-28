@@ -7,9 +7,9 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
-    internal class VariableResolver : SpirvProcessor
+    internal class VariableResolver : SpirvResolver<SpirvInstruction>
     {
-        protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
+        protected override void OnResolve(SpirvReflectContext context, SpirvInstruction inst)
         {
             if (inst.Result == null || inst.OpCode != SpirvOpCode.OpVariable)
                 return;
@@ -40,10 +40,6 @@ namespace SpirvReflector
 
             if (v.StorageClass == SpirvStorageClass.Uniform)
                 context.Result.AddUniform(v);
-
-            // Check if the variable is a resource.
-            if(v.StorageClass == SpirvStorageClass.Image || v.Type is SpirvImageType imgType)
-                context.Result.AddResource(v);
 
             context.SetAssignedElement(inst.Result.Value, v);
             context.ReplaceElement(inst, v);

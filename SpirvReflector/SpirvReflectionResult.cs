@@ -61,6 +61,7 @@ namespace SpirvReflector
 
         internal void AddResource(SpirvVariable resource)
         {
+            if(!_resources.Contains(resource))
             _resources.Add(resource);
         }
 

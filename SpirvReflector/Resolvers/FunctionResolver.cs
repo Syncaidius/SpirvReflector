@@ -8,12 +8,12 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
-    internal class FunctionResolver : SpirvProcessor
+    internal class FunctionResolver : SpirvResolver<SpirvInstruction>
     {
         Stack<SpirvFunction> _funcStack = new Stack<SpirvFunction>();
         SpirvFunction _curFunc;
 
-        protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
+        protected override void OnResolve(SpirvReflectContext context, SpirvInstruction inst)
         {
             switch (inst.OpCode)
             {

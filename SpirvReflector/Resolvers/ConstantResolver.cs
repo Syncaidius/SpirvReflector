@@ -7,9 +7,9 @@ using System.Xml.Linq;
 
 namespace SpirvReflector
 {
-    internal class ConstantResolver : SpirvProcessor
+    internal class ConstantResolver : SpirvResolver<SpirvInstruction>
     {
-        protected override void OnProcess(SpirvReflectContext context, SpirvInstruction inst)
+        protected override void OnResolve(SpirvReflectContext context, SpirvInstruction inst)
         {
             if (inst.OpCode != SpirvOpCode.OpConstant)
                 return;

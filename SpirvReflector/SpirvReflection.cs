@@ -17,12 +17,12 @@ namespace SpirvReflector
     public class SpirvReflection
     {
         SpirvDef _def;
-        Dictionary<Type, SpirvProcessor> _parsers;
+        Dictionary<Type, SpirvResolver> _parsers;
 
         public SpirvReflection(IReflectionLogger log)
         {
             Log = log;
-            _parsers = new Dictionary<Type, SpirvProcessor>();
+            _parsers = new Dictionary<Type, SpirvResolver>();
 
             Stream stream = TryGetEmbeddedStream("spirv.core.grammar.json", typeof(SpirvInstructionDef).Assembly);
 
@@ -56,19 +56,19 @@ namespace SpirvReflector
         }
 
         private void Run<T>(SpirvReflectContext context)
-                where T : SpirvProcessor, new()
+                where T : SpirvResolver, new()
         {
             Type pType = typeof(T);
-            if (!typeof(SpirvProcessor).IsAssignableFrom(pType))
-                throw new InvalidOperationException($"The provided parser type must be a derivative of {nameof(SpirvProcessor)}");
+            if (!typeof(SpirvResolver).IsAssignableFrom(pType))
+                throw new InvalidOperationException($"The provided parser type must be a derivative of {nameof(SpirvResolver)}");
 
-            if (!_parsers.TryGetValue(pType, out SpirvProcessor parser))
+            if (!_parsers.TryGetValue(pType, out SpirvResolver parser))
             {
-                parser = Activator.CreateInstance(pType) as SpirvProcessor;
+                parser = Activator.CreateInstance(pType) as SpirvResolver;
                 _parsers.Add(pType, parser);
             };
 
-            parser.Process(context);
+            parser.Resolve(context);
         }
 
         /// <summary>
@@ -135,8 +135,9 @@ namespace SpirvReflector
             Run<PointerResolver>(context);
             Run<VariableResolver>(context);
             Run<NameResolver>(context);
-            Run<Decorator>(context);
-            Run<EntryPointProcessor>(context);
+            Run<DecorationResolver>(context);
+            Run<EntryPointResolver>(context);
+            Run<ResourceResolver>(context);
 
             if(context.Flags.Has(SpirvReflectionFlags.LogInstructions))
                 LogInstructions(context);

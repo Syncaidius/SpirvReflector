@@ -60,5 +60,10 @@ namespace SpirvReflector
         /// Gets the storage class of the variable.
         /// </summary>
         public SpirvStorageClass StorageClass { get; internal set; }
+
+        /// <summary>
+        /// Gets the HLSL resource type equivalent of the current type, if any.
+        /// </summary>
+        public SpirvHlslEquivalent HlslEquivalent { get; internal set; }
     }
 }
