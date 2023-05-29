@@ -11,25 +11,62 @@ namespace SpirvReflector
     {
         protected override void OnResolve(SpirvReflectContext context, SpirvInstruction inst)
         {
-            if (inst.OpCode != SpirvOpCode.OpConstant)
-                return;
-
-            uint typeID = inst.GetOperandValue<uint>(0);
-            if (context.TryGetAssignedElement(typeID, out SpirvType type))
+            switch (inst.OpCode)
             {
-                SpirvConstant c = new SpirvConstant()
-                {
-                    ID = inst.Result.Value,
-                    Type = type,
-                    Value = ResolveConstantValue(inst, type),
-                };
+                case SpirvOpCode.OpConstant:
+                    {
+                        uint typeID = inst.GetOperandValue<uint>(0);
+                        if (context.TryGetAssignedElement(typeID, out SpirvType type))
+                        {
+                            object value = ResolveConstantValue(inst, type);
+                            SpirvConstant c = new SpirvConstant()
+                            {
+                                ID = inst.Result.Value,
+                                Type = type,
+                                Values = new object[] { value },
+                            };
 
-                context.SetAssignedElement(inst.Result.Value, c);
-                context.ReplaceElement(inst, c);
-            }
-            else
-            {
-                context.Log.Error($"Could not find type {typeID} for OpConstant {inst.Result}.");
+                            context.SetAssignedElement(inst.Result.Value, c);
+                            context.ReplaceElement(inst, c);
+                        }
+                        else
+                        {
+                            context.Log.Error($"Could not find type {typeID} for OpConstant {inst.Result}.");
+                        }
+                    }
+                    break;
+
+                case SpirvOpCode.OpConstantComposite:
+                    {
+                        uint typeID = inst.GetOperandValue<uint>(0);
+                        if (context.TryGetAssignedElement(typeID, out SpirvType type))
+                        {
+                            int numValues = inst.Operands.Count - 2;
+                            object[] values = new object[numValues];
+
+                            for (int i = 2; i < inst.Operands.Count; i++)
+                            {
+                                uint constID = inst.GetOperandValue<uint>(i);
+                                if (context.TryGetAssignedElement(constID, out SpirvConstant constant))
+                                    values[i - 2] = constant.Values[0];
+                            }
+
+                            SpirvConstant c = new SpirvConstant()
+                            {
+                                ID = inst.Result.Value,
+                                Type = type,
+                                Values = values,
+                            };
+
+                            context.SetAssignedElement(inst.Result.Value, c);
+                            context.ReplaceElement(inst, c);
+                        }
+                        else
+                        {
+                            context.Log.Error($"Could not find type {typeID} for OpConstant {inst.Result}.");
+                        }
+                    }
+                    break;
             }
         }
 
