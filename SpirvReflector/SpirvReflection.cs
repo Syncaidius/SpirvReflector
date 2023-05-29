@@ -165,8 +165,8 @@ namespace SpirvReflector
         /// <returns></returns>
         public unsafe SpirvReflectionResult Reflect(void* byteCode, nuint numBytes, SpirvReflectionFlags flags)
         {
-            SpirvReflectContext context = new SpirvReflectContext(this, flags);
-            SpirvStream stream = new SpirvStream(byteCode, numBytes);
+            SpirvReflectContext context = new SpirvReflectContext(this, (byte*)byteCode, numBytes, flags);
+            SpirvStream stream = new SpirvStream(context.ByteCode, context.NumBytes);
 
             context.Result.Version = (SpirvVersion)stream.ReadWord();
             context.Result.Generator = stream.ReadWord();
@@ -188,17 +188,17 @@ namespace SpirvReflector
             Run<EntryPointResolver>(context);
             Run<ResourceResolver>(context);
 
-            if(context.Flags.Has(SpirvReflectionFlags.LogInstructions))
+            if(context.Result.Flags.Has(SpirvReflectionFlags.LogInstructions))
                 LogInstructions(context);
 
-            if(context.Flags.Has(SpirvReflectionFlags.LogAssignments))
+            if(context.Result.Flags.Has(SpirvReflectionFlags.LogAssignments))
                 LogAssignments(context);
 
-            if(context.Flags.Has(SpirvReflectionFlags.LogResult))
+            if(context.Result.Flags.Has(SpirvReflectionFlags.LogResult))
                 LogResult(context);
 
-            if(context.Flags.Has(SpirvReflectionFlags.Instructions))
-                context.Result.SetInstructions(context.Instructions);
+            if(context.Result.Flags.Has(SpirvReflectionFlags.Instructions))
+                context.Result.SetInstructions(context);
 
             return context.Result;
         }
@@ -254,7 +254,6 @@ namespace SpirvReflector
             for (int i = 0; i < context.Elements.Count; i++)
             {
                 ConsoleColor col = ConsoleColor.White;
-
                 if (context.Elements[i] is SpirvInstruction)
                     col = ConsoleColor.DarkGray;
 

@@ -38,6 +38,13 @@ namespace SpirvReflector
         /// The returned <see cref="SpirvReflectionResult"/> will be populated with the instructions that were read from the bytecode.
         /// </summary>
         Instructions = 1 << 4,
+
+        /// <summary>
+        /// If this flag is set, an internal copy of the bytecode will not be made producing reflection information.
+        /// <para>This is useful for reducing the memory footprint, if you do not intend to manipulate any part of the byteCode.</para>
+        /// <para>If you set this flag and call any method(s) which alters the underlying bytecode, changes will be directly applied to the source bytecode that was provided during the originating <see cref="SpirvReflection"/>.Reflect() call.</para>
+        /// </summary>
+        NoSafeCopy = 1 << 5,
     }
 
     public static class SpirvReflectionFlagsExtension

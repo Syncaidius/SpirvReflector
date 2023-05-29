@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -11,7 +12,7 @@ namespace SpirvReflector
     /// A reflection result which contains statistical and binding information for SPIR-V bytecode. 
     /// <para>This could be used to automatically map application data to shader inputs and outputs.</para>
     /// </summary>
-    public class SpirvReflectionResult
+    public class SpirvReflectionResult : IDisposable
     {
         List<SpirvCapability> _capabilities;
         List<SpirvSource> _sources;
@@ -22,8 +23,10 @@ namespace SpirvReflector
         List<SpirvInstruction> _instructions;
 
         uint _bound;
+        unsafe byte* _byteCode;
+        nuint _numBytes;
 
-        internal SpirvReflectionResult()
+        internal SpirvReflectionResult(SpirvReflectionFlags flags)
         {
             _capabilities = new List<SpirvCapability>();
             _sources = new List<SpirvSource>();
@@ -65,10 +68,24 @@ namespace SpirvReflector
             _resources.Add(resource);
         }
 
-        internal void SetInstructions(List<SpirvInstruction> instructions)
+        internal unsafe void SetInstructions(SpirvReflectContext context)
         {
+            _byteCode = context.ByteCode;
+            _numBytes = context.NumBytes;
+
             _instructions.Clear();
-            _instructions.AddRange(instructions);
+            _instructions.AddRange(context.Instructions);
+        }
+
+        /// <summary>
+        /// Disposes of any underlying unsafe resources.
+        /// <para>If <see cref="SpirvReflectionFlags.Instructions"/> flag was set without the <see cref="SpirvReflectionFlags.NoSafeCopy"/> flag, 
+        /// then the underlying bytecode copy will be disposed.</para>
+        /// </summary>
+        public unsafe void Dispose()
+        {
+            if(Flags.Has(SpirvReflectionFlags.Instructions))
+                Marshal.FreeHGlobal((IntPtr)_byteCode);
         }
 
         /// <summary>
@@ -141,5 +158,10 @@ namespace SpirvReflector
         /// Gets the total number of instructions in the bytecode.
         /// </summary>
         public int InstructionCount { get; internal set; }
+
+        /// <summary>
+        /// Gets the flags that were originally provided to produce the current <see cref="SpirvReflectionResult"/>.
+        /// </summary>
+        public SpirvReflectionFlags Flags { get; }
     }
 }

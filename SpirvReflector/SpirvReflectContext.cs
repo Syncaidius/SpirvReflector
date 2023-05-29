@@ -1,21 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace SpirvReflector
 {
-    internal class SpirvReflectContext
+    internal unsafe class SpirvReflectContext : IDisposable
     {
         internal SpirvInstruction[] Assignments;
+        byte* _byteCode;
+        nuint _numBytes;
 
         Dictionary<uint, SpirvBytecodeElement> _assignedElements { get; } = new Dictionary<uint, SpirvBytecodeElement>();
 
-        internal SpirvReflectContext(SpirvReflection reflection, SpirvReflectionFlags flags)
+        internal SpirvReflectContext(SpirvReflection reflection, byte* sourceByteCode, nuint numBytes, SpirvReflectionFlags flags)
         {
             Reflection = reflection;
-            Flags = flags;
+            Result = new SpirvReflectionResult(flags);
+            _numBytes = numBytes;
+
+            if (Result.Flags.Has(SpirvReflectionFlags.NoSafeCopy))
+            {
+                _byteCode = sourceByteCode;
+            }
+            else
+            {
+                _byteCode = (byte*)Marshal.AllocHGlobal((int)numBytes).ToPointer();
+                Buffer.MemoryCopy(sourceByteCode, _byteCode, numBytes, numBytes);
+            }
         }
 
         internal void ReplaceElement(SpirvBytecodeElement element, SpirvBytecodeElement replacement)
@@ -55,20 +66,35 @@ namespace SpirvReflector
             return false;
         }
 
+        public void Dispose()
+        {
+            if (_byteCode != null && !Result.Flags.Has(SpirvReflectionFlags.NoSafeCopy))
+            {
+                // Don't dispose if we're outputting instructions, which store a pointer to their place within the bytecode.
+                // Disposing the bytecode would invalidate those pointers, so we'll leave disposal up to SpirvReflectionResult.
+                if(!Result.Flags.Has(SpirvReflectionFlags.Instructions))
+                    Marshal.FreeHGlobal(new IntPtr(_byteCode));
+            }
+        }
+
         internal SpirvReflection Reflection { get; }
 
-        internal SpirvReflectionResult Result { get; } = new SpirvReflectionResult();
+        internal SpirvReflectionResult Result { get; }
 
         internal List<SpirvInstruction> Instructions { get; } = new List<SpirvInstruction>();
 
         internal List<SpirvBytecodeElement> Elements { get; } = new List<SpirvBytecodeElement>();
 
-        /// <summary>
-        /// Gets the flags that were passed in during the associated <see cref="SpirvReflection.Reflect(byte[], SpirvReflectionFlags)"/> or 
-        /// <see cref="SpirvReflection.Reflect(void*, nuint, SpirvReflectionFlags)"/> call.
-        /// </summary>
-        internal SpirvReflectionFlags Flags { get; }
-
         internal IReflectionLogger Log => Reflection.Log;
+
+        /// <summary>
+        /// Gets a pointer to the underlying bytecode data.
+        /// </summary>
+        internal byte* ByteCode => _byteCode;
+
+        /// <summary>
+        /// Gets the number of bytes in <see cref="ByteCode"/>.
+        /// </summary>
+        internal nuint NumBytes => _numBytes;
     }
 }
