@@ -19,10 +19,12 @@
     <PackageTags>spirv; spir-v; shader; bytecode; vulkan;</PackageTags>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Platforms>AnyCPU;x64</Platforms>
-    <PackageReleaseNotes>Improved memory safety of bytecode
+    <PackageReleaseNotes>Improved bytecode memory safety
 Added SpirvReflectionFlags.NoSafeCopy
 SpirvReflectionResult.Flags property now contains the reflection flags
-Removed SpirvReflectContext.Flags property</PackageReleaseNotes>
+Removed SpirvReflectContext.Flags property
+Improved constant value detection/support
+Improved shader resource type detection</PackageReleaseNotes>
     <PackageIcon>icon_package.png</PackageIcon>
   </PropertyGroup>
 
