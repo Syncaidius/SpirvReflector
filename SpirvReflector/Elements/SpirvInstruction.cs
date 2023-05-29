@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpirvReflector
 {
@@ -100,32 +97,17 @@ namespace SpirvReflector
         public override string ToString()
         {
             string opResult = Result != null ? $"{Result} = " : "";
-            if (Operands.Count > 0)
-            {
-                string operands = GetOperandString();
-                return $"{opResult}{OpCode} -- {operands}";
-            }
-            else
-            {
-                return $"{opResult}{OpCode}";
-            }
+            string operands = GetOperandString();
+            return $"{opResult}{OpCode}{operands}";
         }
 
         internal string GetOperandString()
         {
-            string result = "";
-            for (int i = 0; i < Operands.Count; i++)
-            {
-                if (Operands[i] is SpirvIdResult)
-                    continue;
+            string op = string.Join(", ", Operands.Where(o => o is not SpirvIdResult));
+            if(op.Length > 0)
+                op = " -- " + op;
 
-                if (result.Length > 0)
-                    result += ", ";
-
-                result += Operands[i].ToString();
-            }
-
-            return result;
+            return op;
         }
 
         /// <summary>
@@ -138,10 +120,19 @@ namespace SpirvReflector
         /// </summary>
         public SpirvOpCode OpCode => (SpirvOpCode)(_ptr[0] & 0xFFFF);
 
+        /// <summary>
+        /// Gets a list of all detected operands in the current <see cref="SpirvInstruction"/>.
+        /// </summary>
         public List<SpirvWord> Operands { get; }
 
+        /// <summary>
+        /// Gets the assignment ID of the current <see cref="SpirvInstruction"/>, if present.
+        /// </summary>
         public SpirvIdResult Result { get; set; }
 
+        /// <summary>
+        /// Gets the number of remaining unread words in the current <see cref="SpirvInstruction"/>.
+        /// </summary>
         public uint UnreadWordCount => WordCount - _readIndex;
     }
 }

@@ -252,7 +252,14 @@ namespace SpirvReflector
             Log.WriteLabeled("Entry Point(s)", $"{entryPoints}");
 
             for (int i = 0; i < context.Elements.Count; i++)
-                Log.WriteLabeled($"{i}", context.Elements[i].ToString());
+            {
+                ConsoleColor col = ConsoleColor.White;
+
+                if (context.Elements[i] is SpirvInstruction)
+                    col = ConsoleColor.DarkGray;
+
+                Log.WriteLabeled($"{i}", context.Elements[i].ToString(), ConsoleColor.DarkGray, col);
+            }
         }
 
         private void ReadInstructions(SpirvStream stream, SpirvReflectContext context)
