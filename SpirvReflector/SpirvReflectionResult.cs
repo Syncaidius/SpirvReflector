@@ -35,6 +35,8 @@ namespace SpirvReflector
             _uniforms = new List<SpirvVariable>();
             _resources = new List<SpirvVariable>();
             _instructions = new List<SpirvInstruction>();
+
+            Flags = flags;
         }
 
         internal void AddCapaibility(SpirvCapability cap)
