@@ -7,3 +7,6 @@ A pure C# implementation SPIR-V reflection. Provides binding and statistical inf
 # Build Status
 [![Build Status](https://dev.azure.com/jyarwood/SpirvReflector/_apis/build/status%2FSpirvReflector-CI?branchName=Release)](https://dev.azure.com/jyarwood/SpirvReflector/_build/latest?definitionId=6&branchName=Release) 
 
+# Sponsors
+A massive thank you to some of our sponsors:
+ * [IceReaper](https://github.com/IceReaper)
