@@ -180,7 +180,15 @@ public class Generator
 		{
 			string opName = instDef.OpName;
 			if(Char.IsDigit(opName[0]))
+            {
 				opName = $"Op{opName}";
+            }
+            else
+            {
+                // Capitalize first letter
+                opName = instDef.OpName.Substring(0, 1).ToUpper() + instDef.OpName.Substring(1);
+            }
+
             Out($"      {opName} = {instDef.Opcode},");
             Out("");
 		}

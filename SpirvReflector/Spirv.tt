@@ -19,6 +19,13 @@
         ["Spirv"] = "spirv.core.grammar.json",
         ["ExtGlsl450"] = "extinst.glsl.std.450.grammar.json",
         ["Ext"] = "extinst.debuginfo.grammar.json",
+        ["ExtNonSemantic"] = "extinst.nonsemantic.clspvreflection.grammar.json",
+        ["ExtOpenCLDebug"] = "extinst.opencl.debuginfo.100.grammar.json",
+        ["ExtOpenCL"] = "extinst.opencl.std.100.grammar.json",
+        ["ExtAmdGCN"] = "extinst.spv-amd-gcn-shader.grammar.json",
+        ["ExtAmdBallot"] = "extinst.spv-amd-shader-ballot.grammar.json",
+        ["ExtAmdEplicitVertex"] = "extinst.spv-amd-shader-explicit-vertex-parameter.grammar.json",
+        ["ExtAmdTrinaryMinMax"] = "extinst.spv-amd-shader-trinary-minmax.grammar.json"
     };
 
     foreach(string prefix in downloads.Keys)
